@@ -1,4 +1,4 @@
-SUBDIRS = bios xbios gemdos mint hwreg xgemdos
+SUBDIRS = lib
 
 INCLUDES = -I../include
 
@@ -7,10 +7,10 @@ bin_PROGRAMS = tos
 BUILT_SOURCES = scancode_us.c optiondef.c
 
 tos_SOURCES = tos.c version.c load.c optfile.c traps.c file_emu.c \
-	malloc.c trace.c strace.c scancode_us.c optiondef.c
+	malloc.c trace.c strace.c \
+	scancode_us.c optiondef.c
 
-tos_LDADD = bios/libbios.a xbios/libxbios.a gemdos/libgemdos.a \
-	mint/libmint.a hwreg/libhwreg.a xgemdos/libxgemdos.a
+tos_LDADD = lib/libotosis.a
 
 tos_LDFLAGS = -Wl,-Telf-ldscript.x
 

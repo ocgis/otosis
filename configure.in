@@ -120,8 +120,9 @@ AC_SUBST(VERSION)
 AC_OUTPUT(Makefile \
 	tools/Makefile \
 	include/Makefile \
-	src/Makefile src/bios/Makefile src/gemdos/Makefile \
-	src/hwreg/Makefile src/mint/Makefile src/xbios/Makefile \
-	src/xgemdos/Makefile \
+	src/Makefile src/lib/Makefile \
+	src/lib/bios/Makefile src/lib/gemdos/Makefile \
+	src/lib/hwreg/Makefile src/lib/mint/Makefile \
+	src/lib/xbios/Makefile src/lib/xgemdos/Makefile \
 	doc/Makefile
 )
