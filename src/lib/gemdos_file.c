@@ -331,8 +331,10 @@ GEMDOSFUNC(Fattrib)
 	   * write access to the file
 	   */
 	  attr = 0;
-	  if (S_ISDIR( st_buf.st_mode ))
-		  attr |= TOS_ATTRIB_DIRECTORY;
+	  if (S_ISDIR( st_buf.st_mode )) {
+        attr |= TOS_ATTRIB_DIRECTORY;
+      }
+
 	  if (getuid() == st_buf.st_uid)
 		  w = st_buf.st_mode & S_IWUSR;
 	  else if (getgid() == st_buf.st_gid)

@@ -174,6 +174,7 @@ MINTFUNC(Pdomain)
   if( newdomain == 0 || newdomain == 1 ) {
     prog->domain = newdomain;
   }
+
   return olddomain;
 }
 

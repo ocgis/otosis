@@ -4,6 +4,7 @@
  *
  *  Copyright 1996 Elias Martenson <elias@omicron.se>
  *  Copyright 1996 Roman Hodek <Roman.Hodek@informatik.uni-erlangen.de>
+ *  Copyright 1999 Christer Gustavsson <cg@nocrew.org>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -27,6 +28,7 @@
 #include "prototypes.h"
 #include "toserrors.h"
 #include "mint.h"
+#include "init.h"
 
 #define	UNUSED	(TosSystemCall *)NULL
 
@@ -99,6 +101,11 @@ unsigned long dispatch_mint( char *args )
 {
   int callnum = *(short *)args;
   long rv;
+
+  /* Allocate a program structure if needed */
+  if (prog == NULL) {
+    prog = new_program ();
+  }
 
   callnum -= 255;
   if (callnum < 0 || callnum > arraysize(mint_syscalls) ||

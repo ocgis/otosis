@@ -31,11 +31,14 @@
 
 extern TosProgram * prog;
 
+#define TRUE 1
+
 /*
 ** Exported
 **
 ** 1999-01-16 CG
 ** 1999-01-25 CG
+** 1999-02-02 CG
 */
 TosProgram *
 new_program (void) {
@@ -47,6 +50,9 @@ new_program (void) {
   read_configuration ();
 
   setup_drivemap ();
+
+  /* Default for the lib is to emulate mint calls */
+  nprog->emulate_mint = TRUE;
 
   return nprog;
 }
