@@ -103,6 +103,8 @@ char *tos_errno_names[] = {
 	"-200 EMOUNT (Mount point crossed)",
 };
 
+#define	LAST_TOS_ERRNO	-200
+
 /*
  * Structures for printing TOS structures
  */
