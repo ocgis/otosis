@@ -97,9 +97,9 @@ char *mint_call_retv[] = {
 };
 #endif
 
-unsigned long dispatch_mint( char *args )
+unsigned long dispatch_mint(char * _args)
 {
-  int callnum = *(short *)args;
+  TOSARG(short, callnum);
   long rv;
 
   /* Allocate a program structure if needed */
@@ -114,9 +114,9 @@ unsigned long dispatch_mint( char *args )
     return TOS_EINVFN;
   }
 
-  STRACE_BEGIN( mint, args+2 );
-  rv = mint_syscalls[ callnum ]( args + 2 );
-  STRACE_END( mint, args+2, rv );
+  STRACE_BEGIN(mint, _args);
+  rv = mint_syscalls[callnum](_args);
+  STRACE_END(mint, _args, rv);
   return rv;
 }
 

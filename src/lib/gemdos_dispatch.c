@@ -120,12 +120,10 @@ char *gemdos_call_retv[] = {
 };
 #endif
 
-unsigned long dispatch_gemdos( char *args )
+unsigned long dispatch_gemdos(char * _args)
 {
-  int callnum;
+  TOSARG(short, callnum);
   long rv;
-
-  callnum = *(short *)args;
 
   /* Allocate a program structure if needed */
   if (prog == NULL) {
@@ -134,7 +132,7 @@ unsigned long dispatch_gemdos( char *args )
 
   /* Check for possible MiNT call */
   if (prog->emulate_mint && callnum >= 255) {
-    return dispatch_mint( args );
+    return dispatch_mint(_args - 2);
   }
 
   if (callnum < 0 || callnum > arraysize(gemdos_syscalls) ||
@@ -143,9 +141,9 @@ unsigned long dispatch_gemdos( char *args )
     return TOS_EINVFN;
   }
 
-  STRACE_BEGIN( gemdos, args+2 );
-  rv = gemdos_syscalls[ callnum ]( args + 2 );
-  STRACE_END( gemdos, args+2, rv );
+  STRACE_BEGIN(gemdos, _args);
+  rv = gemdos_syscalls[ callnum ](_args);
+  STRACE_END( gemdos, _args, rv );
   return rv;
 }
 
