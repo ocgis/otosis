@@ -32,6 +32,7 @@
 #include <errno.h>
 #include <time.h>
 
+#include "memory.h"
 #include "div.h"
 #include "prototypes.h"
 #include "gemdos.h"
@@ -55,7 +56,7 @@ GEMDOSFUNC(Fsetdta)
 
 GEMDOSFUNC(Fgetdta)
 {
-  return (ulong)prog->dta;
+  return (UInt32)prog->dta;
 }
 
 /*
@@ -92,7 +93,7 @@ GEMDOSFUNC(Fgetdta)
 GEMDOSFUNC(Fcreate)
 {
   TOSARG(char *,filename);
-  TOSARG(short,attr);
+  TOSARG(SInt16,attr);
   SIGSTACK_STATIC char new_fname[ 1024 ];
   int fp, fd, mode;
 
@@ -139,7 +140,7 @@ GEMDOSFUNC(Fopen)
   /* ++roman: at the start :-) */
 
   TOSARG(char *,filename);
-  TOSARG(short,mode);
+  TOSARG(SInt16,mode);
   SIGSTACK_STATIC char new_fname[ 1024 ];
   int omode;
   int fp, fd;
@@ -196,7 +197,7 @@ GEMDOSFUNC(Fopen)
 
 GEMDOSFUNC(Fclose)
 {
-  TOSARG(short,fd);
+  TOSARG(SInt16,fd);
   int map;
   
   if (IS_DEV_HANDLE(fd))
@@ -219,8 +220,8 @@ GEMDOSFUNC(Fclose)
 
 GEMDOSFUNC(Fread)
 {
-  TOSARG(short,fd);
-  TOSARG(ulong,length);
+  TOSARG(SInt16,fd);
+  TOSARG(UInt32,length);
   TOSARG(char *,buffer);
   int fp = fd, ret;
 
@@ -246,8 +247,8 @@ GEMDOSFUNC(Fread)
   
 GEMDOSFUNC(Fwrite)
 {
-  TOSARG(short,fd);
-  TOSARG(ulong,length);
+  TOSARG(SIn16,fd);
+  TOSARG(UInt32,length);
   TOSARG(char *,buffer);
   int ret, fp = fd;
 
@@ -280,11 +281,11 @@ GEMDOSFUNC(Fdelete)
 
 GEMDOSFUNC(Fseek)
 {
-  TOSARG(off_t,offset);
-  TOSARG(short,fd);
-  TOSARG(short,mode);
+  TOSARG(SInt32,offset);
+  TOSARG(SInt16,fd);
+  TOSARG(SInt16,mode);
   int nmode, fp = fd;
-  long ret;
+  UInt32 ret;
 
   GETFD( fp );
   if (fp < 0)
@@ -313,8 +314,8 @@ GEMDOSFUNC(Fseek)
 GEMDOSFUNC(Fattrib)
 {
   TOSARG(char *,filename);
-  TOSARG(ushort,wflag);
-  TOSARG(ushort,attr);
+  TOSARG(SInt16,wflag);
+  TOSARG(SInt16,attr);
   SIGSTACK_STATIC char new_fname[ 1024 ];
   struct stat st_buf;
   int w, new_mode;
@@ -369,8 +370,8 @@ GEMDOSFUNC(Fattrib)
 
 GEMDOSFUNC(Fdup)
 {
-	TOSARG(short,fd);
-	int fp = fd, fp2;
+	TOSARG(SInt16,fd);
+	SInt32 fp = fd, fp2;
 
 	if (!IS_STD_HANDLE(fp))
 		return TOS_EIHNDL;
@@ -389,10 +390,10 @@ GEMDOSFUNC(Fdup)
 
 GEMDOSFUNC(Fforce)
 {
-  TOSARG(short,standh);
-  TOSARG(short,nonstandh);
-  int stdh = standh, nstdh = nonstandh;
-  int smap, nmap;
+  TOSARG(SInt16,standh);
+  TOSARG(SInt16,nonstandh);
+  SInt32 stdh = standh, nstdh = nonstandh;
+  SInt32 smap, nmap;
   
   if (!IS_STD_HANDLE(stdh) || IS_STD_HANDLE(nstdh))
 	  return TOS_EIHNDL;
@@ -419,7 +420,7 @@ GEMDOSFUNC(Fforce)
 GEMDOSFUNC(Fsfirst)
 {
   TOSARG(char *,filename);
-  TOSARG(short,mask);
+  TOSARG(SInt16,mask);
   SIGSTACK_STATIC char tfname[ 1024 ], fname[ 1024 ];
 
   find_info.find_mask = mask;
@@ -485,7 +486,7 @@ GEMDOSFUNC(Fsnext)
 
 GEMDOSFUNC(Frename)
 {
-  TOSARG(short,dummy);
+  TOSARG(SInt16,dummy);
   TOSARG(char *,src);
   TOSARG(char *,dest);
   SIGSTACK_STATIC char new_src[ 1024 ], new_dest[ 1024 ];
@@ -503,8 +504,8 @@ GEMDOSFUNC(Frename)
 GEMDOSFUNC(Fdatime)
 {
   TOSARG(Datetime *,timeptr);
-  TOSARG(short,fd);
-  TOSARG(short,flag);
+  TOSARG(SInt16,fd);
+  TOSARG(SInt16,flag);
   int handle = fd;
   struct stat buf;
   struct tm *ltime;
@@ -543,7 +544,7 @@ GEMDOS_UNIMP(Flock);
 
 GEMDOSFUNC(Dsetdrv)
 {
-  TOSARG(short,drive);
+  TOSARG(SInt16,drive);
   int old_drive = prog->curdrv;
 
   CHECK_DRV( drive );
@@ -559,7 +560,7 @@ GEMDOSFUNC(Dgetdrv)
 GEMDOSFUNC(Dfree)
 {
   TOSARG(Diskinfo *,buf);
-  TOSARG(short,drive);
+  TOSARG(SInt16,drive);
 
   ARG_USED(drive);
   buf->b_free = 1000;
@@ -653,7 +654,7 @@ GEMDOSFUNC(Dsetpath)
 GEMDOSFUNC(Dgetpath)
 {
   TOSARG(char *,buf);
-  TOSARG(short,drive);
+  TOSARG(SInt16,drive);
 
   if( drive == 0 ) {
 	drive = prog->curdrv;
@@ -681,7 +682,7 @@ GEMDOSFUNC(Dgetpath)
  * TOS_EIHNDL. If everything is ok, getfd() returns True (1).
  */
 
-int getfd( int *fd )
+SInt32 getfd( SInt32 *fd )
 
 {
 	if (IS_DEV_HANDLE(*fd))
@@ -703,7 +704,7 @@ int getfd( int *fd )
  * returns new GEMDOS handle, or < 0 for error
  */
 
-int new_handle( void )
+SInt32 new_handle( void )
 
 {	int	i;
 	

@@ -1,10 +1,160 @@
+Sun Dec  6 21:22:24 1998  loke  <loke@knight>
+
+	* src/lib/gemdos/file.c:
+
+	Changed datatypes from explicit long's etc. to abstract types.
+	
+Sat Dec  5 20:44:52 1998  Tomas Berndtsson  <tomas@knight>
+
+	* src/traps.c, src/tos.c: fix in_emu volatile
+
+Thu Dec  3 23:47:18 1998  Tomas Berndtsson  <tomas@knight>
+
+	* src/lib/Makefile.in, src/lib/Makefile.am, configure.in.xgemdos, src/tos.c, configure.in, configure:
+	Temporarily removed xgemdos support
+
+Tue Dec  1 22:45:05 1998  loke  <loke@knight>
+
+	* src/m68kemu/memory.h, src/m68kemu/memory.c:
+
+	The memory accesses works on SPARC.
+
+	The problem is that SPARC required 32 memory accesses to be
+	on a 32 bit boundary. A set of macros GET_LONG and SET_LONG has been
+	written that splits longword fetchaes and stores into two 16 bit
+	accesses.
+
+	Theoretically, this would be required for 16-bit accesses as well (splitting
+	into two 8-bit accesses). However, only the 68030 ataris allow this. The older
+	68000-based machines gave bus error. It seems to be a reasonable performance
+	enhancement to require 16-bit aligned longword accesses for all emulated
+	architectures.
+
+	This can easily be changed if it is necessary for compatibility.
+
+Sun Nov 29 22:00:48 1998  loke  <loke@knight>
+
+	* src/m68kemu/newcpu.h, src/m68kemu/newcpu.c, src/m68kemu/misc.h, src/m68kemu/memory.h, src/m68kemu/memory.c, src/m68kemu/m68k_emu.c:
+
+	First version that is actually able to run M68K code
+
+Sun Nov 29 19:50:56 1998  Tomas Berndtsson  <tomas@knight>
+
+	* src/lib/Makefile.am: Fixing LIBADDs
+
+	* include/bindproto.h: Prototypes macros for bindings in the library.
+
+Sun Nov 29 16:40:42 1998  loke  <loke@knight>
+
+	* src/m68kemu/md-generic/support.c, src/m68kemu/md-generic/maccess.h, src/m68kemu/newcpu.c, src/m68kemu/newcpu.h, src/m68kemu/m68k_emu.c, src/m68kemu/misc.h, src/m68kemu/fpp.c, src/m68kemu/gencpu.c, src/m68kemu/Makefile:
+
+	The CPU emulator compiles without errors now. It doesn't run though.
+
+	* src/m68kemu/memory.c, src/m68kemu/newcpu.h, src/m68kemu/table68k:
+	*** empty log message ***
+
+	* src/m68kemu/malloc.h, src/m68kemu/md-generic/m68k.h, src/m68kemu/md-generic/maccess.h, src/m68kemu/md-generic/rpt.h, src/m68kemu/md-generic/support.c, src/m68kemu/memory.h, src/m68kemu/misc.h, src/m68kemu/newcpu.h, src/m68kemu/readcpu.c, src/m68kemu/readcpu.h, src/m68kemu/Makefile, src/m68kemu/build68k.c, src/m68kemu/gencpu.c, src/m68kemu/malloc.c:
+	Actually added the oCPUsis files, and not just the directory
+
+Sun Oct 18 17:08:02 1998  Tomas Berndtsson  <tomas@knight>
+
+	* tools/Makefile.in, src/lib/xgemdos/Makefile.in, src/lib/xbios/Makefile.in, src/lib/mint/Makefile.in, src/lib/hwreg/Makefile.in, src/lib/gemdos/Makefile.in, src/lib/bios/Makefile.in, src/lib/xgemdosbind.c, src/tos.c, src/load.c, src/Makefile.in, include/Makefile.in, doc/Makefile.in, configure.in, configure, config.h.in, aclocal.m4, Makefile.in:
+	Use real aesbind.h and check for library in configure. Activate xgemdos code.
+
+	* src/lib/xgemdos/xgemdos.c, src/lib/xgemdos/dispatch_xgemdos.c, src/lib/xbios/hw.c, src/lib/xbios/dispatch_xbios.c, src/lib/mint/proc.c, src/lib/mint/file.c, src/lib/mint/dispatch_mint.c, src/lib/hwreg/dispatch_hwreg.c, src/lib/gemdos/proc.c, src/lib/gemdos/mem.c, src/lib/gemdos/file.c, src/lib/gemdos/dispatch_gemdos.c, src/lib/gemdos/chardev.c, src/lib/bios/vt52.c, src/lib/bios/misc.c, src/lib/bios/dispatch_bios.c, src/lib/bios/chardev.c, src/lib/xgemdosbind.c, src/lib/xbiosbind.c, src/lib/mintbind.c, src/lib/gemdosbind.c, src/lib/biosbind.c, src/version.c, src/traps.c, src/trace.c, src/tos.c, src/strace.c, src/load.c, src/file_emu.c, include/xbios.h, include/bios.h:
+	Use "" for all local include files.
+
+Fri Oct  9 22:24:28 1998  Tomas Berndtsson  <tomas@knight>
+
+	* AUTHORS: Added the people who has worked on oTOSis.
+
+Mon Oct  5 19:13:27 1998  Tomas Berndtsson  <tomas@knight>
+
+	* src/lib/xgemdos/Makefile.in, src/lib/xgemdos/Makefile.am, src/lib/xbios/Makefile.in, src/lib/xbios/Makefile.am, src/lib/mint/Makefile.in, src/lib/mint/Makefile.am, src/lib/hwreg/Makefile.in, src/lib/hwreg/Makefile.am, src/lib/gemdos/file.c, src/lib/gemdos/chardev.c, src/lib/gemdos/Makefile.in, src/lib/gemdos/Makefile.am, src/lib/bios/chardev.c, src/lib/bios/Makefile.in, src/lib/bios/Makefile.am, src/lib/biosbind.c, src/lib/gemdosbind.c, src/lib/mintbind.c, src/lib/xbiosbind.c, src/lib/xgemdosbind.c, src/lib/Makefile.am, src/Makefile.in, include/div.h, include/bios.h, configure:
+	Moving library sources into own directory and added bindings for functions.
+
+Fri Oct  2 11:27:06 1998  Tomas Berndtsson  <tomas@knight>
+
+	* src/xgemdos/Attic/xgemdos.c, src/xgemdos/Attic/dispatch_xgemdos.c, src/xgemdos/Attic/Makefile.in, src/xgemdos/Attic/Makefile.am, src/xbios/Attic/hw.c, src/xbios/Attic/dispatch_xbios.c, src/xbios/Attic/Makefile.in, src/xbios/Attic/Makefile.am, src/mint/Attic/proc.c, src/mint/Attic/file.c, src/mint/Attic/dispatch_mint.c, src/mint/Attic/Makefile.in, src/lib/xgemdos/xgemdos.c, src/mint/Attic/Makefile.am, src/lib/hwreg/Makefile.in, src/lib/hwreg/dispatch_hwreg.c, src/lib/mint/Makefile.am, src/lib/mint/Makefile.in, src/lib/mint/dispatch_mint.c, src/lib/mint/file.c, src/lib/mint/proc.c, src/lib/xbios/Makefile.am, src/lib/xbios/Makefile.in, src/lib/xbios/dispatch_xbios.c, src/lib/xbios/hw.c, src/lib/xgemdos/Makefile.am, src/lib/xgemdos/Makefile.in, src/lib/xgemdos/dispatch_xgemdos.c, src/lib/gemdos/Makefile.in, src/lib/gemdos/chardev.c, src/lib/gemdos/dispatch_gemdos.c, src/lib/gemdos/file.c, src/lib/gemdos/mem.c, src/lib/gemdos/proc.c, src/lib/hwreg/Makefile.am, src/lib/gemdos/Makefile.am, src/lib/Makefile.am, src/lib/bios/Makefile.am, src/lib/bios/Makefile.in, src/lib/bios/chardev.c, src/lib/bios/dispatch_bios.c, src/lib/bios/misc.c, src/lib/bios/vt52.c, src/hwreg/Attic/dispatch_hwreg.c, src/hwreg/Attic/Makefile.in, src/hwreg/Attic/Makefile.am, src/gemdos/Attic/proc.c, src/gemdos/Attic/mem.c, src/gemdos/Attic/file.c, src/gemdos/Attic/dispatch_gemdos.c, src/gemdos/Attic/chardev.c, src/gemdos/Attic/Makefile.in, src/gemdos/Attic/Makefile.am, src/bios/Attic/vt52.c, src/bios/Attic/misc.c, src/bios/Attic/dispatch_bios.c, src/bios/Attic/chardev.c, src/bios/Attic/Makefile.in, src/bios/Attic/Makefile.am, src/Makefile.am, configure.in:
+	Moved the library files into its own directory
+
+	* configure.in, configure, include/version.h: Increased version to 0.30
+
+	* include/div.h: Added defines and definitions for Pmsg and Psemaphore
+
+	* src/mint/Attic/proc.c: Added support Pmsg and Psemaphore
+
+Tue Sep 29 22:22:46 1998  Tomas Berndtsson  <tomas@knight>
+
+	* Attic/scancode_us.c, xgemdos/Attic/xgemdos.c, xgemdos/Attic/dispatch_xgemdos.c, xgemdos/Attic/Makefile, xbios/Attic/hw.c, xbios/Attic/dispatch_xbios.c, src/mint/Attic/Makefile.in, src/mint/Attic/dispatch_mint.c, src/mint/Attic/file.c, src/mint/Attic/proc.c, src/xbios/Attic/Makefile.am, src/xbios/Attic/Makefile.in, src/xbios/Attic/dispatch_xbios.c, src/xbios/Attic/hw.c, src/xgemdos/Attic/Makefile.am, src/xgemdos/Attic/Makefile.in, src/xgemdos/Attic/dispatch_xgemdos.c, src/xgemdos/Attic/xgemdos.c, tools/Makefile.am, tools/Makefile.in, tools/make_scancode.c, tools/options_to_c.awk, tools/options_to_h.awk, xbios/Attic/Makefile, src/Makefile.in, src/bios/Attic/Makefile.am, src/bios/Attic/Makefile.in, src/bios/Attic/chardev.c, src/bios/Attic/dispatch_bios.c, src/bios/Attic/misc.c, src/bios/Attic/vt52.c, src/elf-ldscript.x, src/file_emu.c, src/gemdos/Attic/Makefile.am, src/gemdos/Attic/Makefile.in, src/gemdos/Attic/chardev.c, src/gemdos/Attic/dispatch_gemdos.c, src/gemdos/Attic/file.c, src/gemdos/Attic/mem.c, src/gemdos/Attic/proc.c, src/hwreg/Attic/Makefile.am, src/hwreg/Attic/Makefile.in, src/hwreg/Attic/dispatch_hwreg.c, src/load.c, src/malloc.c, src/mint/Attic/Makefile.am, src/optfile.c, src/strace.c, src/tos.c, src/trace.c, src/traps.c, src/version.c, src/Makefile.am, mint/Attic/proc.c, mint/Attic/file.c, mint/Attic/dispatch_mint.c, mint/Attic/Makefile, include/Makefile.am, include/Makefile.in, include/div.h, hwreg/Attic/dispatch_hwreg.c, hwreg/Attic/Makefile, gemdos/Attic/proc.c, gemdos/Attic/mem.c, gemdos/Attic/file.c, gemdos/Attic/dispatch_gemdos.c, gemdos/Attic/chardev.c, doc/Makefile.am, doc/Makefile.in, gemdos/Attic/Makefile, doc/Attic/Makefile, bios/Attic/vt52.c, bios/Attic/misc.c, bios/Attic/dispatch_bios.c, bios/Attic/chardev.c, bios/Attic/Makefile, Attic/version.c, Attic/traps.c, Attic/trace.c, Attic/tos.c, Attic/test-elf.c, Attic/strace.c, stamp-h.in, Attic/options.awk, Attic/optfile.c, missing, mkinstalldirs, Attic/malloc.c, Attic/make_scancode.c, Attic/load.c, install-sh, Attic/file_emu.c, Attic/elf-ldscript.x, Makefile.am, Makefile.in, NEWS, aclocal.m4, config.h.in, configure, configure.in, AUTHORS, Attic/Makefile, INSTALL:
+	Converting package to use autoconf/automake.
+
+Sat Sep 26 13:12:35 1998  Tomas Berndtsson  <tomas@knight>
+
+	* xgemdos/Attic/xgemdos.c, xgemdos/Attic/dispatch_xgemdos.c:
+	Use vdibind.h instead of the extern_ovdisis.h hack.
+
+	* Attic/Makefile: Now using ovdisis-config to look for libovdisis.
+
+Wed Jul  8 11:57:32 1998  Tomas Berndtsson  <tomas@knight>
+
+	* doc/Attic/OSis.info: Removed because it is made at compile time
+
+	* include/Attic/compile.h, Attic/make_scancode:
+	Removed because they are made at compile time
+
+	* Attic/Makefile: include/compile.h changed back to be forced
+
+	* Attic/Makefile: minor CFLAGS changes when debug=yes
+
+Sun Jun 28 14:19:54 1998  cg  <cg@knight>
+
+	* include/xgemdos.h, xgemdos/Attic/Makefile, xgemdos/Attic/dispatch_xgemdos.c, xgemdos/Attic/xgemdos.c:
+	Initial revision
+
+	* include/xgemdos.h, xgemdos/Attic/Makefile, xgemdos/Attic/dispatch_xgemdos.c, xgemdos/Attic/xgemdos.c, include/Attic/compile.h, include/prototypes.h, include/div.h:
+	Yet another oTOSis snapshot.
+
+	* Attic/make_scancode, Attic/scancode_us.c: Initial revision
+
+	* Attic/make_scancode, Attic/scancode_us.c, bios/Attic/chardev.c, Attic/load.c, options.def, Attic/Makefile, Attic/malloc.c, Attic/traps.c, ChangeLog, Attic/tos.c:
+	Yet another oTOSis snapshot.
+
+	* include/div.h, mint/Attic/file.c, mint/Attic/proc.c, gemdos/Attic/proc.c, gemdos/Attic/file.c, bios/Attic/misc.c, Attic/make_scancode.c, Attic/trace.c, Attic/load.c, ChangeLog, Attic/tos.c:
+	Another oTOSis snapshot.
+
+	* Attic/Makefile, Attic/elf-ldscript.x, Attic/file_emu.c, Attic/load.c, Attic/make_scancode.c, Attic/malloc.c, Attic/optfile.c, Attic/options.awk, Attic/strace.c, Attic/test-elf.c, Attic/tos.c, Attic/trace.c, Attic/traps.c, Attic/version.c, COPYING, ChangeLog, README, ToDo, bios/Attic/Makefile, bios/Attic/chardev.c, bios/Attic/dispatch_bios.c, bios/Attic/misc.c, bios/Attic/vt52.c, doc/Attic/Makefile, doc/Attic/OSis.info, doc/OSis.texi, gemdos/Attic/Makefile, gemdos/Attic/chardev.c, gemdos/Attic/dispatch_gemdos.c, gemdos/Attic/file.c, gemdos/Attic/mem.c, gemdos/Attic/proc.c, hwreg/Attic/Makefile, hwreg/Attic/dispatch_hwreg.c, include/Attic/compile.h, include/bios.h, include/div.h, include/fd.h, include/gemdos.h, include/mint.h, include/option.h, include/prototypes.h, include/sysvars.h, include/toserrors.h, include/traps.h, include/version.h, include/vt52.h, include/xbios.h, mint/Attic/Makefile, mint/Attic/dispatch_mint.c, mint/Attic/file.c, mint/Attic/proc.c, options.def, scancode.us, xbios/Attic/Makefile, xbios/Attic/dispatch_xbios.c, xbios/Attic/hw.c:
+	Initial revision
+
+	* Attic/Makefile, Attic/elf-ldscript.x, Attic/file_emu.c, Attic/load.c, Attic/make_scancode.c, Attic/malloc.c, Attic/optfile.c, Attic/options.awk, Attic/strace.c, Attic/test-elf.c, Attic/tos.c, Attic/trace.c, Attic/traps.c, Attic/version.c, COPYING, ChangeLog, README, ToDo, bios/Attic/Makefile, bios/Attic/chardev.c, bios/Attic/dispatch_bios.c, bios/Attic/misc.c, bios/Attic/vt52.c, doc/Attic/Makefile, doc/Attic/OSis.info, doc/OSis.texi, gemdos/Attic/Makefile, gemdos/Attic/chardev.c, gemdos/Attic/dispatch_gemdos.c, gemdos/Attic/file.c, gemdos/Attic/mem.c, gemdos/Attic/proc.c, hwreg/Attic/Makefile, hwreg/Attic/dispatch_hwreg.c, include/Attic/compile.h, include/bios.h, include/div.h, include/fd.h, include/gemdos.h, include/mint.h, include/option.h, include/prototypes.h, include/sysvars.h, include/toserrors.h, include/traps.h, include/version.h, include/vt52.h, include/xbios.h, mint/Attic/Makefile, mint/Attic/dispatch_mint.c, mint/Attic/file.c, mint/Attic/proc.c, options.def, scancode.us, xbios/Attic/Makefile, xbios/Attic/dispatch_xbios.c, xbios/Attic/hw.c:
+	Snapshot of oTOSis.
+
+Mon Mar 23 18:30:55 1998  Tomas Berndtsson <tomas@nocrew.org>
+
+	* xgemdos/*: added support for xgemdos and oVDIsis calls. This is
+	experimental only.
+
+Mon Mar 23 15:00:08 1998  Tomas Berndtsson <tomas@nocrew.org>
+
+	* tos.c, traps.c: changed signal setups to compile with libc6 and
+	2.1.x kernel. Removed special treatment for now obsolete 1.3 kernel.
+
+Sun Oct  6 16:02:26 1996  Superuser  (root@outpost)
+
+	* gemdos/file.c: Implemented ARGV commandline handling
+
 Sat Oct  5 01:34:45 1996  Superuser  (root@outpost)
 
-	* Implemented scancode emulation
+	* gemdos/proc.c: Changed Pexec to create options for the
+	called program to set up drives and current directories.
 
-Wed Oct  2 17:43:40 1996  Superuser  (root@outpost)
+	* Implemented scancode emulation. A program, make_scancode,
+	is used to create a lookup table from a scancode definition
+	file.
 
-	* bios/chardev.c: Added an option: vt52,that specifies
+Wed Oct  2 17:43:40 1996  Elias Martenson  (elias@omicron.se)
+
+	* bios/chardev.c: Added an option: vt52, that specifies
 	weither to use vt52 emulation.
 
 Mon Sep 30 01:24:37 1996  Elias Martenson  (elias@omicron.se)

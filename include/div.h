@@ -29,6 +29,7 @@
 #include <sys/types.h>
 #include <dirent.h>
 
+#include "memory.h"
 #include "option.h"
 
 #define OTOSIS_GLOBAL_CONFIG	"/etc/tos.conf"
@@ -40,57 +41,57 @@
 #define ARG_USED(x)		(void)(x)
 
 typedef struct {
-  ushort magic;			/* Magic number */
-  ulong tsize;			/* Size of TEXT segment */
-  ulong dsize;			/* Size of DATA segment */
-  ulong bsize;			/* Size of BSS segment */
-  ulong ssize;			/* Size of symbol table */
-  ulong res1;			/* Reserved */
-  ulong prgflags;		/* Program flags */
-  ushort absflag;		/* Absolute program flag */
+  UInt16 magic;			/* Magic number */
+  UInt32 tsize;			/* Size of TEXT segment */
+  UInt32 dsize;			/* Size of DATA segment */
+  UInt32 bsize;			/* Size of BSS segment */
+  UInt32 ssize;			/* Size of symbol table */
+  UInt32 res1;			/* Reserved */
+  UInt32 prgflags;		/* Program flags */
+  UInt16 absflag;		/* Absolute program flag */
 } TosExecHeader;
 
 #define TOS_PROGRAM_MAGIC	0x601A
-#define TEXT_SEGMENT(H,X)	((void *)((ulong)(X)))
-#define DATA_SEGMENT(H,X)	((void *)((ulong)TEXT_SEGMENT(H,X) + (H)->tsize))
-#define BSS_SEGMENT(H,X)	((void *)((ulong)DATA_SEGMENT(H,X) + (H)->dsize))
-#define FIXUP_OFFSET(H)		((void *)((ulong)BSS_SEGMENT(H,sizeof(TosExecHeader)) + (H)->ssize))
+#define TEXT_SEGMENT(H,X)	((Ptr32 )((UInt32)(X)))
+#define DATA_SEGMENT(H,X)	((Ptr32 )((UInt32)TEXT_SEGMENT(H,X) + (H)->tsize))
+#define BSS_SEGMENT(H,X)	((Ptr32 )((UInt32)DATA_SEGMENT(H,X) + (H)->dsize))
+#define FIXUP_OFFSET(H)		((Ptr32 )((UInt32)BSS_SEGMENT(H,sizeof(TosExecHeader)) + (H)->ssize))
 
 typedef struct {
   char d_reserved[ 21 ];	/* Reserved */
   char d_attrib;		/* Attribute */
-  ushort d_time;		/* Time */
-  ushort d_date;		/* Date */
-  ulong d_length;		/* Size */
+  UInt16 d_time;		/* Time */
+  UInt16 d_date;		/* Date */
+  UInt32 d_length;		/* Size */
   char d_fname[ 14 ];		/* File name */
 } Dta;
 
 typedef struct {
-  void *lowtpa;			/* Pointer to the TPA */
-  void *hitpa;			/* Pointer to end of TPA */
-  void *tbase;			/* Pointer to TEXT segment */
-  ulong tlen;			/* Length of TEXT segment */
-  void *dbase;			/* Pointer to DATA segment */
-  ulong dlen;			/* Lenght of DATA segment */
-  void *bbase;			/* Pointer to BSS segment */
-  ulong blen;			/* Lenght of BSS segment */
+  Ptr32 lowtpa;			/* Pointer to the TPA */
+  Ptr32 hitpa;			/* Pointer to end of TPA */
+  Ptr32 tbase;			/* Pointer to TEXT segment */
+  UInt32 tlen;			/* Length of TEXT segment */
+  Ptr32 dbase;			/* Pointer to DATA segment */
+  UInt32 dlen;			/* Lenght of DATA segment */
+  Ptr32 bbase;			/* Pointer to BSS segment */
+  UInt32 blen;			/* Lenght of BSS segment */
   Dta *dta;			/* Pointer to DTA */
-  void *parent;			/* Pointer to parent basepage */
-  ulong reserved;		/* Reserved */
+  Ptr32 parent;			/* Pointer to parent basepage */
+  UInt32 reserved;		/* Reserved */
   char *env;			/* Pointer to environment */
   char undef[ 80 ];		/* Undefined string */
   char cmdlin[ 128 ];		/* Command line */
 } TosBasepage;
 
 typedef struct {
-  void *text;			/* Pointer to TEXT segment */
-  void *data;			/* Pointer to DATA segment */
-  void *bss;			/* Pointer to BSS segment */
+  Ptr32 text;			/* Pointer to TEXT segment */
+  Ptr32 data;			/* Pointer to DATA segment */
+  Ptr32 bss;			/* Pointer to BSS segment */
   TosBasepage *basepage;	/* Pointer to basepage */
   Dta *dta;			/* Pointer to DTA */
-  ulong size;			/* Size of allocated memory */
+  UInt32 size;			/* Size of allocated memory */
   int domain;			/* Current MiNT domain */
-  long usrval;			/* Usr value */
+  SInt32 usrval;		/* Usr value */
   int emulate_mint;		/* MiNT emulation */
   int super;			/* Emulate supervisor */
   int trace;			/* Trace active */
@@ -101,8 +102,8 @@ typedef struct {
 } TosProgram;
 
 typedef struct {
-  ulong cookie;
-  ulong value;
+  UInt32 cookie;
+  UInt32 value;
 } Cookie;
 
 typedef struct {
@@ -127,47 +128,47 @@ typedef struct {
 } Date;
 
 typedef struct {
-  short recsiz;			/* bytes per sector */
-  short clsiz;			/* sectors per cluster */
-  short clsizb;			/* bytes per cluster */
-  short rdlen;			/* sector lenght of root directory */
-  short fsiz;			/* sectors per FAT */
-  short fatrec;			/* starting sector of second FAT */
-  short datrec;			/* starting sector of data */
-  short numcl;			/* clusters per disk */
-  short bflags;			/* bit 0: 1 = 16-bit, 0 = 12 bit */
+  SInt16 recsiz;		/* bytes per sector */
+  SInt16 clsiz;			/* sectors per cluster */
+  SInt16 clsizb;		/* bytes per cluster */
+  SInt16 rdlen;			/* sector lenght of root directory */
+  SInt16 fsiz;			/* sectors per FAT */
+  SInt16 fatrec;		/* starting sector of second FAT */
+  SInt16 datrec;		/* starting sector of data */
+  SInt16 numcl;			/* clusters per disk */
+  SInt16 bflags;		/* bit 0: 1 = 16-bit, 0 = 12 bit */
 } Bpb;
 
 typedef struct {
-  ushort mode;			/* File type and access permissions */
-  long index;			/* Inode */
-  ushort dev;			/* Bios device */
-  ushort reserved1;		/* Reserved */
-  ushort nlink;			/* Number of links */
-  ushort uid;			/* uid */
-  ushort gid;			/* gid */
-  long size;			/* File size in bytes */
-  long blksize;			/* Block size */
-  long nblocks;			/* Blocks used by file*/
-  short mtime;			/* Time of last modification */
-  short mdate;			/* Date of last modification */
-  short atime;			/* Time of last access */
-  short adate;			/* Date of last access */
-  short ctime;			/* Time of file creation */
-  short cdate;			/* Date of file creation */
-  short attr;			/* Standard file attributes */
-  short reserved2;		/* Reserved */
-  long reserved3;		/* Reserved */
-  long reserved4;		/* Reserved */
+  UInt16 mode;			/* File type and access permissions */
+  SInt32 index;			/* Inode */
+  UInt16 dev;			/* Bios device */
+  UInt16 reserved1;		/* Reserved */
+  UInt16 nlink;			/* Number of links */
+  UInt16 uid;			/* uid */
+  UInt16 gid;			/* gid */
+  SInt32 size;			/* File size in bytes */
+  SInt32 blksize;		/* Block size */
+  SInt32 nblocks;		/* Blocks used by file*/
+  SInt16 mtime;			/* Time of last modification */
+  SInt16 mdate;			/* Date of last modification */
+  SInt16 atime;			/* Time of last access */
+  SInt16 adate;			/* Date of last access */
+  SInt16 ctime;			/* Time of file creation */
+  SInt16 cdate;			/* Date of file creation */
+  SInt16 attr;			/* Standard file attributes */
+  SInt16 reserved2;		/* Reserved */
+  SInt32 reserved3;		/* Reserved */
+  SInt32 reserved4;		/* Reserved */
 } Xattr;
 
 typedef Xattr XATTR;
 
 typedef struct {
-  ulong b_free;			/* Number of free clusters */
-  ulong b_total;		/* Total number of clusters on the drive */
-  ulong b_secsize;		/* Bytes per sector */
-  ulong b_clsize;		/* Sectors per cluster */
+  UInt32 b_free;		/* Number of free clusters */
+  UInt32 b_total;		/* Total number of clusters on the drive */
+  UInt32 b_secsize;		/* Bytes per sector */
+  UInt32 b_clsize;		/* Sectors per cluster */
 } Diskinfo;
 
 typedef struct {
@@ -182,15 +183,15 @@ typedef struct {
 } DopendirDirContext;
 
 typedef struct {
-  long  msg1;			/* User message */
-  long  msg2;			/* User message */
-  short pid;			/* pid of reader or writer */
+  SInt32  msg1;			/* User message */
+  SInt32  msg2;			/* User message */
+  SInt16 pid;			/* pid of reader or writer */
 } PMSG;
 
 typedef struct {
-  long sa_handler;
-  short sa_mask;
-  short sa_flags;
+  SInt32 sa_handler;
+  SInt16 sa_mask;
+  SInt16 sa_flags;
 } SIGACTION;
 
 /*
@@ -331,7 +332,7 @@ typedef struct {
 			     }						  \
 			   })
 \
-typedef long TosSystemCall( char * );
+typedef SInt32 TosSystemCall( char * );
 
 #ifdef DEBUG
 
@@ -379,7 +380,7 @@ extern int mid_of_line;		/* declared in strace.c */
 #define	STRACE_END(mod,a,r)
 #endif
 
-#define XFUNC(prefix,name) long prefix##_##name( char *_args )
+#define XFUNC(prefix,name) SInt32 prefix##_##name( char *_args )
 #define	BIOSFUNC(name)     XFUNC(bios,name)
 #define	XBIOSFUNC(name)    XFUNC(xbios,name)
 #define	GEMDOSFUNC(name)   XFUNC(gemdos,name)
@@ -389,7 +390,7 @@ extern int mid_of_line;		/* declared in strace.c */
 #define TOSARG(type,name) type name = *((type *)_args)++
 
 #define XUNIMP(prefix,name)						\
-	long prefix##_##name( char *args ) {				\
+	SInt32 prefix##_##name( char *args ) {				\
 		printf( "Unimplemented " #prefix " call " #name "\n" );	\
 		return TOS_EINVFN;					\
 	}
