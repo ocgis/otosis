@@ -189,9 +189,9 @@ typedef struct {
 } PMSG;
 
 typedef struct {
-  SInt32 sa_handler;
-  SInt16 sa_mask;
-  SInt16 sa_flags;
+  SInt32 handler;
+  SInt16 mask;
+  SInt16 flags;
 } SIGACTION;
 
 /*

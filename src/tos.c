@@ -34,7 +34,11 @@
 /* sys/user.h needed for PAGE_SIZE */
 #include <sys/user.h>
 #include <linux/unistd.h>
+
+/*
+** FIXME
 #include <termbits.h>
+*/
 
 #include "div.h"
 #include "version.h"
@@ -163,6 +167,8 @@ int main( int argc, char **argv )
 
   in_emu = 0;
   /* start up the TOS program; locate stack at top of TPA */
+  /* FIXME */
+#if 0
   __asm__ __volatile__
 	  ( "movel %2,%/sp		\n\t"
 	    "movel %0,%/sp@-	\n\t"
@@ -172,14 +178,20 @@ int main( int argc, char **argv )
 		: /* no outputs */
 		: "g" (prog->basepage), "a" (prog->text),
 		  "g" (prog->basepage->hitpa) );
-
+#endif
+  
   return 0;
 }
 
 void sigill_handler( int sig, int vec, struct sigcontext *s )
 {
   int insn, trap_num;
-  
+
+  /*
+  ** FIXME
+  ** sigcontext doesn't seem to be the same in ppc linux as in m68k linux
+  */
+#if 0
   if( in_emu ) {
     printf( "SIGILL in emulator code (pc=%08lx insn=%04x).\n",
 			s->sc_pc, *(ushort *)(s->sc_pc) );
@@ -244,7 +256,7 @@ void sigill_handler( int sig, int vec, struct sigcontext *s )
 	  bombs( vec );
 	  
   }
-
+#endif /* 0 end FIXME */
   in_emu = 0;
 }
 

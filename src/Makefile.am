@@ -12,7 +12,8 @@ tos_SOURCES = tos.c version.c load.c optfile.c traps.c file_emu.c \
 
 tos_LDADD = lib/libotosis.a
 
-tos_LDFLAGS = -Wl,-Telf-ldscript.x
+# FIXME
+#tos_LDFLAGS = -Wl,-Telf-ldscript.x
 
 scancode_us.c: ../tools/make_scancode ../scancode.us
 	../tools/make_scancode ../scancode.us > scancode_us.c

@@ -89,6 +89,8 @@ XBIOSFUNC(Supexec)
    *  variables than the ones specified in the clobbered lise
    *
    */
+  /* FIXME */
+  #if 0
   __asm__ __volatile__ ( "moveml %/d3-%/d7/%/a3-%/a6,%/sp@-	\n\t"
 			 "jsr %1@ ; movel %/d0,%0		\n\t"
 			 "moveml %/sp@+,%/d3-%/d7/%/a3-%/a6" :
@@ -97,6 +99,7 @@ XBIOSFUNC(Supexec)
 			 /* all not-call-saved regs must be in clobbered
 			  * list! */
 			 "d0", "d1", "d2", "a0", "a1", "a2" );
+  #endif
   in_emu = 1;
   prog->super = saved_super;
   DDEBUG( "returning from Supexec\n" );

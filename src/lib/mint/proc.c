@@ -35,6 +35,15 @@
 #include "toserrors.h"
 #include "mint.h"
 
+#ifdef _SEM_SEMUN_UNDEFINED
+union semun {
+  int                  val;
+  struct semid_ds *    buf;
+  unsigned short int * array;
+  struct seminfo *     __buf;
+};
+#endif
+
 extern TosProgram *prog;
 
 MINTFUNC(Syield)

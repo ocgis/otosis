@@ -247,7 +247,7 @@ GEMDOSFUNC(Fread)
   
 GEMDOSFUNC(Fwrite)
 {
-  TOSARG(SIn16,fd);
+  TOSARG(SInt16,fd);
   TOSARG(UInt32,length);
   TOSARG(char *,buffer);
   int ret, fp = fd;

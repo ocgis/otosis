@@ -77,8 +77,6 @@ tos_SOURCES = tos.c version.c load.c optfile.c traps.c file_emu.c \
 	scancode_us.c optiondef.c
 
 tos_LDADD = lib/libotosis.a
-
-tos_LDFLAGS = -Wl,-Telf-ldscript.x
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../config.h
 CONFIG_CLEAN_FILES = 
@@ -92,6 +90,7 @@ LIBS = @LIBS@
 tos_OBJECTS =  tos.o version.o load.o optfile.o traps.o file_emu.o \
 malloc.o trace.o strace.o scancode_us.o optiondef.o
 tos_DEPENDENCIES =  lib/libotosis.a
+tos_LDFLAGS = 
 CFLAGS = @CFLAGS@
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(CPPFLAGS) $(CFLAGS)
 LINK = $(CC) $(CFLAGS) $(LDFLAGS) -o $@
@@ -100,7 +99,7 @@ DIST_COMMON =  Makefile.am Makefile.in
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
-TAR = gtar
+TAR = tar
 GZIP = --best
 DEP_FILES =  .deps/file_emu.P .deps/load.P .deps/malloc.P \
 .deps/optfile.P .deps/optiondef .deps/optiondef.P .deps/scancode_us \
@@ -362,6 +361,9 @@ uninstall-am install-exec install-data install uninstall all \
 installdirs mostlyclean-generic distclean-generic clean-generic \
 maintainer-clean-generic clean mostlyclean distclean maintainer-clean
 
+
+# FIXME
+#tos_LDFLAGS = -Wl,-Telf-ldscript.x
 
 scancode_us.c: ../tools/make_scancode ../scancode.us
 	../tools/make_scancode ../scancode.us > scancode_us.c
