@@ -6,9 +6,9 @@
 DEBUG = yes
 
 # set to 'no' if you don't have oVDIsis, or don't want to use it,
-# otherwise 'yes'. Be sure OVDISISDIR is set correctly if 'yes'.
+# otherwise 'yes'. Be sure OAESISDIR is set correctly if 'yes'.
 XGEMDOS = yes
-OVDISISDIR = /usr/local/src/osis/ovdisis
+#OVDISISDIR = /usr/local/src/osis/ovdisis
 OAESISDIR = /usr/local/src/osis/noaesis
 
 # compilers and flags:
@@ -19,6 +19,7 @@ LDFLAGS =
 AR      = ar
 LIBS    = -lncurses
 
+INSTALL = cp
 
 # different CFLAGS depending on DEBUG
 ifeq ($(DEBUG),yes)
@@ -55,7 +56,7 @@ MAKE_SCANCODE_OBJS = make_scancode.o
 EXEC = tos
 
 # sub-directories:
-SUBDIRS = bios xbios gemdos mint hwreg doc
+SUBDIRS = bios xbios gemdos mint hwreg #doc
 SUBDIROBJS = bios/bios.a xbios/xbios.a gemdos/gemdos.a mint/mint.a \
              hwreg/hwreg.a
 
@@ -69,11 +70,12 @@ CSRC = tos.c version.c  load.c optfile.c traps.c file_emu.c malloc.c \
 
 # Add some things if xgemdos is to be used
 ifeq ($(XGEMDOS),yes)
-CFLAGS += -I$(OVDISISDIR) -I$(OAESISDIR) -DUSE_XGEMDOS
-LIBS += -lfb
+OVDISIS_CFLAGS = $(shell ovdisis-config --cflags)
+OVDISIS_LIBS = $(shell ovdisis-config --libs)
+CFLAGS += $(OVDISIS_CFLAGS) -I$(OAESISDIR) -DUSE_XGEMDOS
+LIBS += $(OVDISIS_LIBS)
 SUBDIRS += xgemdos
-SUBDIROBJS += xgemdos/xgemdos.a $(OVDISISDIR)/src/ovdisis.a \
-	$(OAESISDIR)/src/oaesis.a
+SUBDIROBJS += xgemdos/xgemdos.a $(OAESISDIR)/src/oaesis.a
 endif
 
 
@@ -122,6 +124,9 @@ scancode_us.c: $(MAKE_SCANCODE) scancode.us
 
 $(MAKE_SCANCODE): $(MAKE_SCANCODE_OBJS)
 	$(CC) -o $(MAKE_SCANCODE) $(MAKE_SCANCODE_OBJS)
+
+install:
+	$(INSTALL) $(EXEC) /usr/local/bin
 
 clean:
 	rm -f *.o *~ optiondef.c include/optiondef.h .depend TAGS
