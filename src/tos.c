@@ -5,7 +5,7 @@
  *  Copyright 1996 Elias Martenson <elias@omicron.se>
  *  Copyright 1996 Roman Hodek <Roman.Hodek@informatik.uni-erlangen.de>
  *  Copyright 1998 Tomas Berndtsson <tomas@nocrew.org>
- *  Copyright 1999 Christer Gustavsson <cg@nocrew.org>
+ *  Copyright 1999 - 2001 Christer Gustavsson <cg@nocrew.org>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@
  *
  ************************************************************************/
 
+#include <netinet/in.h>
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
@@ -33,6 +34,7 @@
 #include <sys/mman.h>
 #include <signal.h>
 /* sys/user.h needed for PAGE_SIZE */
+#include <asm/page.h>
 #include <linux/user.h>
 #include <linux/unistd.h>
 #include <termios.h>
@@ -45,12 +47,12 @@
 #include "config.h"
 #endif
 
-#include "debug.h"
-
 #ifdef USE_XGEMDOS
 #include "xgemdos.h"
 #endif
+#include "debug.h"
 #include "emulate.h"
+#include "version.h"
 
 /* Global variables */
 extern TosProgram *prog;
@@ -62,8 +64,13 @@ extern int malloc_regions_size;	 /* size of malloc_regions */
 #define DEFAULT_PRG	""			/* should be the GEM desktop later */
 
 
-void sigill_handler( int, int, struct sigcontext * );
+#ifdef mc68000
+static void sigill_handler( int, int, struct sigcontext * );
+static void setup_sysvars(void);
+#endif /* mc68000 */
 static void parse_cmdline_options( char *argv[], int start, int end );
+static void setup_sig_handlers(void);
+static void print_usage(void);
 
 int main( int argc, char **argv )
 {
@@ -117,33 +124,39 @@ int main( int argc, char **argv )
   /*
    *  Set up the ARGV commandline
    */
-  if( prog->basepage->env == NULL ) {
-	prog->basepage->env = htonl(mymalloc(2));
+  if( prog->basepage->env == NULL )
+  {
+	prog->basepage->env = (char *)htonl((UInt32)mymalloc(2));
 	w = 0;
 	env_len = 2;
   }
   else
   {
-    char * myenv = ntohl(prog->basepage->env);
+    char * myenv;
+
+    myenv = (char *)ntohl((UInt32)prog->basepage->env);
 
 	for(w = 0 ; myenv[w] || myenv[w + 1] ; w++ );
 	w++;
 	env_len = w + 2;
   }
   env_len += 6 + strlen( TosPrgName ) + 2;
-  prog->basepage->env = htonl(myrealloc(ntohl(prog->basepage->env), env_len));
-  strcpy(ntohl(prog->basepage->env) + w, "ARGV=" );
+  prog->basepage->env =
+    (char *)htonl((UInt32)myrealloc((char *)ntohl((UInt32)prog->basepage->env),
+                            env_len));
+  strcpy((char *)ntohl((UInt32)prog->basepage->env) + w, "ARGV=" );
   w += 6;
-  strcpy(ntohl(prog->basepage->env) + w, TosPrgName );
+  strcpy((char *)ntohl((UInt32)prog->basepage->env) + w, TosPrgName );
   w += strlen( TosPrgName ) + 1;
   for( i = prgarg + 1 ; i < argc ; ++i ) {
 	env_len += strlen( argv[ i ] ) + 1;
 	prog->basepage->env =
-      htonl(myrealloc(ntohl(prog->basepage->env), env_len));
-	strcpy(ntohl(prog->basepage->env) + w, argv[i]);
+      (char *)htonl((UInt32)myrealloc((char *)ntohl((UInt32)prog->basepage->env),
+                                      env_len));
+	strcpy((char *)ntohl((UInt32)prog->basepage->env) + w, argv[i]);
 	w += strlen( argv[ i ] ) + 1;
   }
-  ((char *)ntohl(prog->basepage->env))[w] = 0;
+  ((char *)ntohl((UInt32)prog->basepage->env))[w] = 0;
 
   /* make std channels unbuffered */
   setvbuf( stdin, NULL, _IONBF, 0 );
@@ -152,12 +165,14 @@ int main( int argc, char **argv )
   
   setup_drivemap();
   setup_tty();
+#ifdef mc68000
   setup_sysvars();
+#endif /* mc68000 */
   init_bios();
   init_gemdos();
   setup_sig_handlers();
 
-  malloc_regions = mymalloc( sizeof( void * ) * 10 );
+  malloc_regions = (ulong *)mymalloc( sizeof( void * ) * 10 );
   malloc_regions_size = 10;
   *malloc_regions = 0;
 
@@ -180,6 +195,9 @@ int main( int argc, char **argv )
   return 0;
 }
 
+
+#ifdef mc68000
+static
 void sigill_handler( int sig, int vec, struct sigcontext *s )
 {
   int insn, trap_num;
@@ -188,7 +206,6 @@ void sigill_handler( int sig, int vec, struct sigcontext *s )
   ** FIXME
   ** sigcontext doesn't seem to be the same in ppc linux as in m68k linux
   */
-#ifdef mc68000
   if( in_emu ) {
     printf( "SIGILL in emulator code (pc=%08lx insn=%04x).\n",
 			s->sc_pc, *(ushort *)(s->sc_pc) );
@@ -263,19 +280,22 @@ void sigill_handler( int sig, int vec, struct sigcontext *s )
 	  bombs( vec );
 	  
   }
-#endif /* 0 end FIXME */
   in_emu = 0;
 }
+#endif /* mc68000 */
 
-void setup_sysvars( void )
+#ifdef mc68000
+static
+void
+setup_sysvars( void )
 {
   Cookie *cookies;
   int c = 0;
 
-/* Map the first page of memory for the system variables */
+  /* Map the first page of memory for the system variables */
   mmap( 0, PAGE_SIZE, PROT_EXEC | PROT_READ | PROT_WRITE,
 		MAP_ANON | MAP_FIXED | MAP_PRIVATE, 0, 0 );
-  cookies = mymalloc( sizeof( Cookie ) * 10 );
+  cookies = (Cookie *)mymalloc( sizeof( Cookie ) * 10 );
   cookies[ c ].cookie = 0x4F544F53; /* OTOS */
   cookies[ c++ ].value = (OTOSIS_VERSION_MAJOR << 8) | OTOSIS_VERSION_MINOR;
   cookies[ c ].cookie = 0x5F435055; /* _CPU */
@@ -288,6 +308,7 @@ void setup_sysvars( void )
   cookies[ c++ ].value = 9 - c;
   SYSVAR_COOKIES = (ulong)cookies;
 }
+#endif /* mc68000 */
 
 /*
  * The current libc unfortunately still sets sa_restorer in sigaction(),
@@ -325,19 +346,22 @@ static inline _syscall3(int,pure_sigaction,
 				    pure_sigaction( num, &sa, NULL );		\
 				  })
 
-extern void sigsegv_handler( int, int, struct sigcontext * );
-
+static
 void sig_killed( int signum )
 {
 	fprintf( stderr, "Caught %s signal -- exiting\n", sys_siglist[signum] );
 	rexit( 1 );
 }
 
+
+static
 void sig_toggle_trace( int signum )
 {
 	prog->trace = !prog->trace;
 }
-	
+
+
+static	
 void setup_sig_handlers( void )
 {
   unsigned long sigstack;
@@ -365,8 +389,10 @@ void setup_sig_handlers( void )
 
   sigstack = (unsigned long)&sigstack - 128;
 
+#ifdef mc68000
   SETSTACKSIG( SIGILL, sigill_handler, sigstack );
   SETSTACKSIG( SIGSEGV, sigsegv_handler, sigstack );
+#endif /* mc68000 */
 
   SETSIG( SIGHUP,    sig_killed );
   SETSIG( SIGINT,    sig_killed );
@@ -392,7 +418,7 @@ void setup_sig_handlers( void )
 }
 
 
-
+static
 void print_usage( void )
 {
   printf( "Usage: tos -[dhvm] [-r extra_memory] tos_program "
@@ -478,8 +504,7 @@ static void parse_cmdline_options( char *argv[], int start, int end )
 				q = (op->type == OPTTYPE_BOOL) ? "" : p+1;
 			  set_val:
 				/* set option 'op' to value in 'p' */
-				if (!*q && op->type == OPTTYPE_BOOL) {
-					/* boolean options toggeled if empty value */
+				if (!*q && op->type == OPTTYPE_BOOL) {					/* boolean options toggeled if empty value */
 					op->value.i = !op->value.i;
 				}
 				else if (set_option_val( op, q, 1 ))

@@ -31,14 +31,14 @@
 #include <asm/traps.h>
 #endif
 
+#include "traps.h"
 
 extern volatile int in_emu;
 
 
+#ifdef mc68000
 void sigsegv_handler( int sig, int vecnum, struct sigcontext *scp )
 {
-  /* FIXME only m68k */
-#ifdef mc68000
   unsigned long ea, pc, ssw, value;
   int read, size;
   int format = (scp->sc_formatvec >> 12) & 0xf;
@@ -119,8 +119,8 @@ void sigsegv_handler( int sig, int vecnum, struct sigcontext *scp )
   /* clear DF bit in SSW to _not_ rerun the failed cycle */
   framedata->fmta.ssw &= ~SSW_DF;
   in_emu = 0;
-#endif /* Only m68k */
 }
+#endif /* mc68000 */
 
 void bombs( int num )
 {

@@ -33,6 +33,7 @@
 #include <stdio.h>
 
 #include "emulate.h"
+#include "traps.h"
 
 /* FIXME: Maybe it's possible to use CPUexception(2) to signal bus error */
 
@@ -153,7 +154,7 @@ my_handle_exception(int     nr,
     case 1:      /* Gemdos, trap #1 */
       usp = CPUget_usp();
 
-      d0 = dispatch_gemdos(usp);
+      d0 = dispatch_gemdos((char *)usp);
       
       CPUset_dreg(0, d0);
       break;
@@ -171,7 +172,7 @@ my_handle_exception(int     nr,
         break;
 
       default:
-	fprintf(stderr, "Illegal Xgemdos call: 0x%x\n", CPUget_dreg(0));
+	fprintf(stderr, "Illegal Xgemdos call: 0x%lx\n", CPUget_dreg(0));
       }
 #else /* USE_GEM */
       fprintf(stderr, "Xgemdos not supported in this build.\n");
@@ -181,7 +182,7 @@ my_handle_exception(int     nr,
     case 13:     /* Bios, trap #13 */
       usp = CPUget_usp();
 
-      d0 = dispatch_bios(usp);
+      d0 = dispatch_bios((char *)usp);
       
       CPUset_dreg(0, d0);
       break;
@@ -189,7 +190,7 @@ my_handle_exception(int     nr,
     case 14:     /* Xbios, trap #14 */
       usp = CPUget_usp();
 
-      d0 = dispatch_xbios(usp);
+      d0 = dispatch_xbios((char *)usp);
       
       CPUset_dreg(0, d0);
       break;
@@ -216,7 +217,7 @@ my_handle_exception(int     nr,
       break;
 
     default:
-      fprintf(stderr, "Fuck LineA from behind (0x%x: 0x%04x)\n",
+      fprintf(stderr, "Fuck LineA from behind (0x%lx: 0x%04x)\n",
               oldpc,
               instruction);
     }

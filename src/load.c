@@ -55,6 +55,7 @@ TosProgram *load_tos_program( char *filename )
   prog = new_program ();
 
   /* Set up the MiNT emulation flag */
+  DDEBUG( "Environment: %s\n", Opt_environment );
   prog->emulate_mint = Opt_MiNT;
 
   /* Set up GEM flag, if program name ends on .app or .prg
@@ -67,12 +68,12 @@ TosProgram *load_tos_program( char *filename )
 	prog->gem = 0;
   
   /* Set up the environment */
-  DDEBUG( "Environment: %s\n", Opt_environment );
   if( strcmp( Opt_environment, "-" ) == 0 ) {
 	env = NULL;
   }
-  else {
-	env = mymalloc( strlen( Opt_environment ) + 2 );
+  else
+  {
+	env = (char *)mymalloc( strlen( Opt_environment ) + 2 );
 	for( src = Opt_environment, dest = env ; *src ; src++ ) {
 	  if( *src == '\\' ) {
 		src++;
@@ -117,7 +118,7 @@ TosProgram *load_tos_program( char *filename )
   }
 
   /* read the header */
-  hdr = mymalloc( sizeof(TosExecHeader) );
+  hdr = (TosExecHeader *)mymalloc( sizeof(TosExecHeader) );
   if (fread( hdr, sizeof(TosExecHeader), 1, fp ) != 1 ||
 	  ntohs(hdr->magic) != TOS_PROGRAM_MAGIC) {
 	fprintf( stderr, "%s: no GEMDOS executable\n", filename );
@@ -129,7 +130,7 @@ TosProgram *load_tos_program( char *filename )
   /* calculate size of TPA */
   size = sizeof(TosBasepage) + ntohl(hdr->tsize) + ntohl(hdr->dsize) +
     ntohl(hdr->bsize) + Opt_extra_mem*1024;
-  buf = mymalloc( size );
+  buf = (void *)mymalloc( size );
   bp = (TosBasepage *)buf;
   prg = (void *)(bp + 1);
 
@@ -155,7 +156,7 @@ TosProgram *load_tos_program( char *filename )
   bp->bbase = htonl(BSS_SEGMENT(hdr,prg));
   bp->blen = hdr->bsize;
   bp->parent = (Ptr32)NULL;
-  bp->env = htonl(env);
+  bp->env = (char *)htonl((UInt32)env);
   bp->cmdlin[ 0 ] = 0;
 
   /*  patch_program( hdr ); */
@@ -177,7 +178,7 @@ TosProgram *load_tos_program( char *filename )
 
   prog->basepage = bp;
   prog->basepage->dta = (Dta *)prog->basepage->cmdlin;
-  prog->dta = ntohl(prog->basepage->dta);
+  prog->dta = (Dta *)ntohl((UInt32)prog->basepage->dta);
 
   /* The program starts in user mode */
   prog->super = 0;
