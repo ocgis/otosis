@@ -10,14 +10,14 @@ LT_REVISION=$OTOSIS_MICRO_VERSION
 LT_AGE=$OTOSIS_MINOR_VERSION
 LT_VERSION_INFO="-version-info $LT_CURRENT:$LT_REVISION:$LT_AGE"
 
+dnl Check system type
+AC_CANONICAL_SYSTEM
+
 dnl Initialize automake macros
 AM_INIT_AUTOMAKE($PACKAGE, $VERSION, no-define)
 
 dnl Make a header with the things we find.
 AM_CONFIG_HEADER(config.h)
-
-dnl Use libtool to create libotosis
-AM_PROG_LIBTOOL
 
 dnl Set CFLAGS
 CFLAGS="$CFLAGS"
@@ -27,7 +27,13 @@ AC_PROG_CC
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
 AC_PROG_AWK
-AC_PROG_RANLIB
+
+dnl Use this instead of AC_PROG_RANLIB because
+dnl this works with cross-compiling.
+AC_CHECK_TOOL(RANLIB, ranlib, :)
+
+dnl Use libtool to create libotosis
+AM_PROG_LIBTOOL
 
 dnl Checks for libraries.
 AC_CHECK_LIB(ncurses,main)
@@ -54,7 +60,7 @@ AC_FUNC_FNMATCH
 AC_PROG_GCC_TRADITIONAL
 AC_FUNC_MEMCMP
 AC_FUNC_MMAP
-AC_FUNC_SETVBUF_REVERSED
+dnl AC_FUNC_SETVBUF_REVERSED
 AC_FUNC_VPRINTF
 AC_CHECK_FUNCS(getcwd mkdir rmdir select strerror strspn strtol)
 
