@@ -232,8 +232,8 @@ static int relocate_program( TosBasepage *bp, TosExecHeader *hdr, FILE *fp )
       }
 	  else
       {
-        *(ulong *)fixaddr = htonl(ntohl(*(ulong *)fixaddr) + reloc);
         fixaddr += *fix;
+        *(ulong *)fixaddr = htonl(ntohl(*(ulong *)fixaddr) + reloc);
       }
     }
   }
