@@ -388,19 +388,25 @@ extern int mid_of_line;		/* declared in strace.c */
 
 #if USE_DIRECT_MOVES
 #define TOSARG(type,name) type name = *((type *)_args)++
-#else
-#if 1
-unsigned char pop_char (char ** stack_ptr);
-#define GETPART(shift) (((UInt32)pop_char(&_args)) << shift)
-#else
-/* Doesn't work for some reason */
-#define GETPART(shift) (((UInt32)(*((volatile char *)_args)++)) << shift)
-#endif
-#define TOSARG(type,name) type name = \
-                            (type)((sizeof(type) == 2) ? \
-                            (GETPART(8) | GETPART(0)) : \
-                            (GETPART(24) | GETPART(16) | GETPART(8) | GETPART(0)))
-#endif
+#else /* USE_DIRECT_MOVES */
+#define GETPART(offset, shift) \
+        (((UInt32)(unsigned char)_args[(offset)]) << (shift))
+
+#ifdef WORDS_BIGENDIAN
+#define TOSARG(type, name) \
+        type name = (type)((_args += sizeof(type)), (sizeof(type) == 2 ? \
+             (GETPART(-2,  8) | GETPART(-1,  0)) : \
+             (GETPART(-4, 24) | GETPART(-3, 16) | \
+              GETPART(-2,  8) | GETPART(-1,  0))))
+#else /* WORDS_BIGENDIAN */
+#define TOSARG(type, name) \
+        type name = (type)((_args += sizeof(type)), (sizeof(type) == 2 ? \
+             (GETPART(-1,  8) | GETPART(-2,  0)) : \
+             (GETPART(-1, 24) | GETPART(-2, 16) | \
+              GETPART(-3,  8) | GETPART(-4,  0))))
+#endif /* WORDS_BIGENDIAN */
+
+#endif /* USE_DIRECT_MOVES */
 
 #define XUNIMP(prefix,name)						\
 	SInt32 prefix##_##name( char *args ) {				\
