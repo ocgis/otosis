@@ -20,6 +20,7 @@
  *
  ************************************************************************/
 
+#include <netinet/in.h>
 #include <ocpuis.h>
 #include <stdio.h>
 
@@ -40,7 +41,7 @@ static
 CPUword
 my_get_word(CPUaddr addr)
 {
-  return *((CPUword *)addr);
+  return ntohs(*((CPUword *)addr));
 }
 
 
@@ -48,7 +49,7 @@ static
 CPUlong
 my_get_long(CPUaddr addr)
 {
-  return *((CPUlong *)addr);
+  return ntohl(*((CPUlong *)addr));
 }
 
 
@@ -66,7 +67,7 @@ void
 my_put_word(CPUaddr addr,
             CPUword value)
 {
-  *((CPUword *)addr) = value;
+  *((CPUword *)addr) = htons(value);
 }
 
 
@@ -75,7 +76,7 @@ void
 my_put_long(CPUaddr addr,
             CPUlong value)
 {
-  *((CPUlong *)addr) = value;
+  *((CPUlong *)addr) = htonl(value);
 }
 
 
@@ -186,11 +187,11 @@ void
 emulate(TosProgram * prog)
 {
   CPU *   cpu;
-  CPUaddr sp = (CPUaddr)prog->basepage->hitpa;
-
+  CPUaddr sp;
   my_prog = prog;
 
   /* Setup a pointer to basepage and clear one long */
+  sp = htonl((CPUaddr)prog->basepage->hitpa);
   (CPUbyte *)sp -= 4;
   my_put_long(sp, (CPUlong)prog->basepage);
   (CPUbyte *)sp -= 4;

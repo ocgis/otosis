@@ -131,6 +131,7 @@ TosProgram *load_tos_program( char *filename )
     ntohl(hdr->bsize) + Opt_extra_mem*1024;
   buf = mymalloc( size );
   bp = (TosBasepage *)buf;
+
   prg = (void *)(bp + 1);
 
   /* read program text + data */
@@ -146,15 +147,15 @@ TosProgram *load_tos_program( char *filename )
   }
 
   /* initialize basepage */
-  bp->lowtpa = htonl(bp);
-  bp->hitpa = htonl(buf + size);
+  bp->lowtpa = htonl((UInt32)bp);
+  bp->hitpa = htonl((UInt32)buf + size);
   bp->tbase = htonl(TEXT_SEGMENT(hdr,prg));
   bp->tlen = hdr->tsize;
   bp->dbase = htonl(DATA_SEGMENT(hdr,prg));
   bp->dlen = hdr->dsize;
   bp->bbase = htonl(BSS_SEGMENT(hdr,prg));
   bp->blen = hdr->bsize;
-  bp->parent = NULL;
+  bp->parent = (Ptr32)NULL;
   bp->env = env;
   bp->cmdlin[ 0 ] = 0;
 
@@ -166,7 +167,7 @@ TosProgram *load_tos_program( char *filename )
   fclose( fp );
   
   /* clear BSS and maybe rest of TPA */
-  memset(BSS_SEGMENT(hdr,prg), 0,
+  memset((void *)BSS_SEGMENT(hdr,prg), 0,
          ntohl(hdr->bsize) +
          ((ntohl(hdr->prgflags) & TOS_PRGFLAG_FASTLOAD) ? 0 : Opt_extra_mem*1024) );
 
@@ -199,7 +200,7 @@ static int relocate_program( TosBasepage *bp, TosExecHeader *hdr, FILE *fp )
   unsigned char *fix, *fixaddr;
   unsigned long offset, reloc, space, n;
 
-  if( hdr->absflag )  return 0;
+  if(hdr->absflag)  return 0;
   reloc = ntohl((ulong)bp->tbase);
   
   /* seek to reloc table and read first offset */
@@ -217,7 +218,7 @@ static int relocate_program( TosBasepage *bp, TosExecHeader *hdr, FILE *fp )
   
   for(;;) {
     /* read as much of reloc table as possible into BSS */
-    fix = BSS_SEGMENT(hdr,reloc);
+    fix = (unsigned char *)BSS_SEGMENT(hdr,reloc);
 	if (!(n = fread( fix, sizeof(char), space, fp )))
 	  break;
 	else if (n < 0) {
