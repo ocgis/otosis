@@ -1,5 +1,7 @@
 bin_PROGRAMS = tos
 
+CPPFLAGS = -DDEBUG
+
 tos_SOURCES = \
 	compile.h debug.h emulate.c emulate.h tos.c version.c load.c \
 	traps.c trace.c strace.c
