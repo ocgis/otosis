@@ -73,7 +73,7 @@ XBIOS_UNIMP(Kbrate);
 XBIOS_UNIMP(Prtblk);
 XBIOS_UNIMP(Vsync);
 
-extern int in_emu;
+extern volatile int in_emu;
 
 XBIOSFUNC(Supexec)
 {
