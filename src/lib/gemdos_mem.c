@@ -75,7 +75,6 @@ GEMDOSFUNC(Mxalloc)
 */
 GEMDOSFUNC(Malloc)
 {
-  char * arg2 = _args;
   TOSARG(ulong,size);
   ulong addr;
   int   i = 0;

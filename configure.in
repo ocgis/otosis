@@ -44,6 +44,9 @@ AC_HEADER_STDC
 AC_HEADER_SYS_WAIT
 AC_CHECK_HEADERS(fcntl.h sys/ioctl.h sys/time.h unistd.h)
 
+dnl Check if system is big endian
+AC_C_BIGENDIAN
+
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
 AC_C_INLINE
