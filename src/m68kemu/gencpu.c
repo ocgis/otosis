@@ -24,6 +24,7 @@
 #include <assert.h>
 #include <stdarg.h>
 
+#include "memory.h"
 #include "misc.h"
 #include "readcpu.h"
 #include "malloc.h"

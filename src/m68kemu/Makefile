@@ -1,5 +1,5 @@
 CC = cc
-CFLAGS = -g -v -I.
+CFLAGS = -g -v -I../../include -I.
 LDFLAGS = $(CFLAGS)
 LIBS = -lm
 
@@ -13,7 +13,7 @@ BUILD68K_OBJS = build68k.o
 TABLE68K = table68k
 
 GENCPU = gencpu
-GENCPU_OBJS = gencpu.o readcpu.o cpudefs.o malloc.o
+GENCPU_OBJS = gencpu.o readcpu.o cpudefs.o memory.o malloc.o
 
 all:		$(PROG)
 
