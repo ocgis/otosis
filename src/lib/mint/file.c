@@ -31,12 +31,12 @@
 #include <fcntl.h>
 #include <stdlib.h>
 
-#include <div.h>
-#include <prototypes.h>
-#include <toserrors.h>
-#include <gemdos.h>
-#include <mint.h>
-#include <fd.h>
+#include "div.h"
+#include "prototypes.h"
+#include "toserrors.h"
+#include "gemdos.h"
+#include "mint.h"
+#include "fd.h"
 
 void stat_to_xattr( Xattr *, struct stat * );
 

@@ -36,19 +36,19 @@
 #include <linux/unistd.h>
 #include <termbits.h>
 
-#include <div.h>
-#include <version.h>
-#include <prototypes.h>
-#include <sysvars.h>
-#include <traps.h>
-#include <bios.h>
-#include <xbios.h>
-#include <gemdos.h>
+#include "div.h"
+#include "version.h"
+#include "prototypes.h"
+#include "sysvars.h"
+#include "traps.h"
+#include "bios.h"
+#include "xbios.h"
+#include "gemdos.h"
 #ifdef USE_XGEMDOS
-#include <xgemdos.h>
+#include "xgemdos.h"
 #endif /* USE_XGEMDOS */
-#include <option.h>
-#include <vt52.h>
+#include "option.h"
+#include "vt52.h"
 
 /* Global variables */
 TosProgram *prog;

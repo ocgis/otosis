@@ -24,11 +24,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <div.h>
-#include <prototypes.h>
-#include <gemdos.h>
-#include <toserrors.h>
-#include <option.h>
+#include "div.h"
+#include "prototypes.h"
+#include "gemdos.h"
+#include "toserrors.h"
+#include "option.h"
 
 /*
  *  Some kind of memory allocation control should be possible,

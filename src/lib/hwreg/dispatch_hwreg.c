@@ -23,8 +23,8 @@
 
 #include <stdio.h>
 
-#include <div.h>
-#include <prototypes.h>
+#include "div.h"
+#include "prototypes.h"
 
 int dispatch_hwreg_emu( ulong ea, int size, int read, ulong *value )
 {

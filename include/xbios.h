@@ -23,7 +23,7 @@
 #ifndef XBIOS_CALLS_H
 #define XBIOS_CALLS_H
 
-#include <div.h>
+#include "div.h"
 
 XBIOSFUNC(Initmous);
 XBIOSFUNC(Ssbrk);

@@ -20,9 +20,9 @@
  *
  ************************************************************************/
 
-#include <div.h>
-#include <mint.h>
-#include <bindproto.h>
+#include "div.h"
+#include "mint.h"
+#include "bindproto.h"
 
 typedef void voidfuncl(long);
 

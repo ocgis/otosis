@@ -26,8 +26,8 @@
 #include <stdlib.h>
 #include <errno.h>
 
-#include <div.h>
-#include <prototypes.h>
+#include "div.h"
+#include "prototypes.h"
 
 
 #ifdef DEBUG_STACK

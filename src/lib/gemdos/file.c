@@ -32,12 +32,12 @@
 #include <errno.h>
 #include <time.h>
 
-#include <div.h>
-#include <prototypes.h>
-#include <gemdos.h>
-#include <bios.h>
-#include <toserrors.h>
-#include <fd.h>
+#include "div.h"
+#include "prototypes.h"
+#include "gemdos.h"
+#include "bios.h"
+#include "toserrors.h"
+#include "fd.h"
 
 extern TosProgram *prog;
 extern DirContext find_info;	/* Used for Fsfirst/Fsnext operation */

@@ -23,10 +23,10 @@
 
 #include <stdio.h>
 
-#include <div.h>
-#include <prototypes.h>
-#include <toserrors.h>
-#include <xbios.h>
+#include "div.h"
+#include "prototypes.h"
+#include "toserrors.h"
+#include "xbios.h"
 
 #define	UNUSED	(TosSystemCall *)NULL
 

@@ -28,11 +28,11 @@
 #include <string.h>
 #include <fcntl.h>
 
-#include <div.h>
-#include <prototypes.h>
-#include <gemdos.h>
-#include <bios.h>
-#include <toserrors.h>
+#include "div.h"
+#include "prototypes.h"
+#include "gemdos.h"
+#include "bios.h"
+#include "toserrors.h"
 
 #include "fd.h"
 

@@ -30,13 +30,13 @@
 #include <errno.h>
 #include <signal.h>
 
-#include <div.h>
-#include <prototypes.h>
-#include <bios.h>
-#include <gemdos.h>
-#include <toserrors.h>
+#include "div.h"
+#include "prototypes.h"
+#include "bios.h"
+#include "gemdos.h"
+#include "toserrors.h"
 
-#include <vt52.h>
+#include "vt52.h"
 
 #define	BIOS_DEV_PRT	0
 #define	BIOS_DEV_AUX	1

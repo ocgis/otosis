@@ -25,13 +25,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <div.h>
-#include <prototypes.h>
-#include <toserrors.h>
-#include <xgemdos.h>
-
 #include <vdibind.h>
-#include <extern_oaesis.h>
+#include <aesbind.h>
+
+#include "div.h"
+#include "prototypes.h"
+#include "toserrors.h"
+#include "xgemdos.h"
 
 /* Should call PTerm(0), but this is the same thing */
 XGEMDOSFUNC(Warmstart)

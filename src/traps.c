@@ -28,9 +28,9 @@
 #include <asm/ptrace.h>
 #include <asm/traps.h>
 
-#include <traps.h>
-#include <div.h>
-#include <prototypes.h>
+#include "traps.h"
+#include "div.h"
+#include "prototypes.h"
 
 
 extern int in_emu;

@@ -24,11 +24,11 @@
 #include <stdio.h>
 #include <unistd.h>
 
-#include <div.h>
-#include <prototypes.h>
-#include <toserrors.h>
-#include <gemdos.h>
-#include <mint.h>
+#include "div.h"
+#include "prototypes.h"
+#include "toserrors.h"
+#include "gemdos.h"
+#include "mint.h"
 
 #include "fd.h"
 

@@ -25,12 +25,12 @@
 #include <stdio.h>
 #include <unistd.h>
 
-#include <div.h>
-#include <prototypes.h>
-#include <toserrors.h>
-#include <xgemdos.h>
-
 #include <vdibind.h>
+
+#include "div.h"
+#include "prototypes.h"
+#include "toserrors.h"
+#include "xgemdos.h"
 
 extern TosProgram *prog;
 

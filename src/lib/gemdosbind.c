@@ -20,9 +20,9 @@
  *
  ************************************************************************/
 
-#include <div.h>
-#include <gemdos.h>
-#include <bindproto.h>
+#include "div.h"
+#include "gemdos.h"
+#include "bindproto.h"
 
 
 bindproto0(gemdos,short,Cauxin,0x03);

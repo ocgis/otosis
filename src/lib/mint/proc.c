@@ -30,10 +30,10 @@
 #include <sys/msg.h>
 #include <sys/sem.h>
 
-#include <div.h>
-#include <prototypes.h>
-#include <toserrors.h>
-#include <mint.h>
+#include "div.h"
+#include "prototypes.h"
+#include "toserrors.h"
+#include "mint.h"
 
 extern TosProgram *prog;
 

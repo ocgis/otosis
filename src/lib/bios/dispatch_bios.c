@@ -23,10 +23,10 @@
 
 #include <stdio.h>
 
-#include <div.h>
-#include <prototypes.h>
-#include <toserrors.h>
-#include <bios.h>
+#include "div.h"
+#include "prototypes.h"
+#include "toserrors.h"
+#include "bios.h"
 
 extern TosProgram *prog;
 

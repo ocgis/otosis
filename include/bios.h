@@ -24,7 +24,7 @@
 #ifndef BIOS_CALLS_H
 #define BIOS_CALLS_H
 
-#include <div.h>
+#include "div.h"
 
 BIOSFUNC(Getmpb);
 BIOSFUNC(Bconstat);

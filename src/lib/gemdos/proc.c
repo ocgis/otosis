@@ -30,10 +30,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <div.h>
-#include <prototypes.h>
-#include <gemdos.h>
-#include <toserrors.h>
+#include "div.h"
+#include "prototypes.h"
+#include "gemdos.h"
+#include "toserrors.h"
 
 extern TosProgram *prog;
 

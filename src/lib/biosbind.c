@@ -20,9 +20,9 @@
  *
  ************************************************************************/
 
-#include <div.h>
-#include <bios.h>
-#include <bindproto.h>
+#include "div.h"
+#include "bios.h"
+#include "bindproto.h"
 
 typedef void voidfunc(void);
 

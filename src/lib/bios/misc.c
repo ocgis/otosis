@@ -27,10 +27,10 @@
 #include <sys/types.h>
 #include <string.h>
 
-#include <div.h>
-#include <prototypes.h>
-#include <bios.h>
-#include <toserrors.h>
+#include "div.h"
+#include "prototypes.h"
+#include "bios.h"
+#include "toserrors.h"
 
 
 extern TosProgram *prog;

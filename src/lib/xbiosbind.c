@@ -20,9 +20,9 @@
  *
  ************************************************************************/
 
-#include <div.h>
-#include <xbios.h>
-#include <bindproto.h>
+#include "div.h"
+#include "xbios.h"
+#include "bindproto.h"
 
 typedef void voidfunc(void);
 typedef long longfunc(void);

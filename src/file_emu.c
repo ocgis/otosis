@@ -26,9 +26,9 @@
 #include <errno.h>
 #include <time.h>
 
-#include <div.h>
-#include <prototypes.h>
-#include <toserrors.h>
+#include "div.h"
+#include "prototypes.h"
+#include "toserrors.h"
 
 
 extern TosProgram *prog;

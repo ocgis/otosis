@@ -26,8 +26,8 @@
 #include <ncurses/term.h>
 #include <sys/ioctl.h>
 
-#include <div.h>
-#include <vt52.h>
+#include "div.h"
+#include "vt52.h"
 
 
 typedef struct {

@@ -20,8 +20,8 @@
  *
  ************************************************************************/
 
-#include <div.h>
-#include <xgemdos.h>
+#include "div.h"
+#include "xgemdos.h"
 
 /* None of these will actually be used if the
  * programmer is at least somewhat sane, but

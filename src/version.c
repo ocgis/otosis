@@ -21,8 +21,9 @@
  ************************************************************************/
 
 #include <stdio.h>
-#include <compile.h>
-#include <version.h>
+
+#include "compile.h"
+#include "version.h"
 
 
 void print_version( void )
