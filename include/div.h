@@ -33,6 +33,9 @@
 #include "option.h"
 #include "config.h"
 
+/* FIXME */
+#define PACKED __attribute__((packed))
+
 #define OTOSIS_GLOBAL_CONFIG	"/etc/tos.conf"
 #define OTOSIS_USER_CONFIG	".tos"
 
@@ -50,7 +53,7 @@ typedef struct {
   UInt32 res1;			/* Reserved */
   UInt32 prgflags;		/* Program flags */
   UInt16 absflag;		/* Absolute program flag */
-} TosExecHeader;
+} PACKED TosExecHeader;
 
 #define TOS_PROGRAM_MAGIC	0x601A
 #define TEXT_SEGMENT(H,X)	((Ptr32 )((UInt32)(X)))
