@@ -8,8 +8,16 @@
 
 #include "misc.h"
 #include "machdep/maccess.h"
+#include "memory.h"
 
 #define ASM_SYM_FOR_FUNC(X)
+
+
+extern Ptr32 m68k_memory_base_address;
+extern UInt32 m68k_memory_size;
+extern Ptr32 m68k_memory_top_address;
+extern void *m68k_memory_ptr;
+
 
 extern int areg_byteinc[];
 extern int imm8_table[];
@@ -34,40 +42,7 @@ struct cputbl {
 
 extern unsigned long op_illg (UInt32);
 
-typedef char flagtype;
-
-extern struct regstruct
-{
-    UInt32 regs[16];
-    Ptr32  usp,isp,msp;
-    UInt16 sr;
-    flagtype t1;
-    flagtype t0;
-    flagtype s;
-    flagtype m;
-    flagtype x;
-    flagtype stopped;
-    int intmask;
-
-    UInt32 pc;
-    UInt8 *pc_p;
-    UInt8 *pc_oldp;
-
-    UInt32 vbr,sfc,dfc;
-
-    double fp[8];
-    UInt32 fpcr,fpsr,fpiar;
-
-    UInt32 spcflags;
-    UInt32 kick_mask;
-
-    /* Fellow sources say this is 4 longwords. That's impossible. It needs
-     * to be at least a longword. The HRM has some cryptic comment about two
-     * instructions being on the same longword boundary.
-     * The way this is implemented now seems like a good compromise.
-     */
-    UInt32 prefetch;
-} regs, lastint_regs;
+extern RegStructType regs, lastint_regs;
 
 #define m68k_dreg(r,num) ((r).regs[(num)])
 #define m68k_areg(r,num) (((r).regs + 8)[(num)])

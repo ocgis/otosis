@@ -20,11 +20,46 @@ typedef signed long long SInt64;
 
 typedef UInt32 Ptr32;
 
+typedef char FlagType;
+
+
 typedef struct {
   int cpu_level;
   int m68k_speed;
   int cpu_compatible;
 } CPUPrefs;
+
+typedef struct {
+    UInt32 regs[16];
+    Ptr32  usp,isp,msp;
+    UInt16 sr;
+    FlagType t1;
+    FlagType t0;
+    FlagType s;
+    FlagType m;
+    FlagType x;
+    FlagType stopped;
+    int intmask;
+
+    UInt32 pc;
+    UInt8 *pc_p;
+    UInt8 *pc_oldp;
+
+    UInt32 vbr,sfc,dfc;
+
+    double fp[8];
+    UInt32 fpcr,fpsr,fpiar;
+
+    UInt32 spcflags;
+    UInt32 kick_mask;
+
+    /* Fellow sources say this is 4 longwords. That's impossible. It needs
+     * to be at least a longword. The HRM has some cryptic comment about two
+     * instructions being on the same longword boundary.
+     * The way this is implemented now seems like a good compromise.
+     */
+    UInt32 prefetch;
+} RegStructType;
 
 #define HAVE_VSPRINTF		1
 #undef X86_ASSEMBLY

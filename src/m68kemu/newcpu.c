@@ -228,8 +228,8 @@ void init_m68k (void)
     build_cpufunctbl ();
 }
 
-struct regstruct regs, lastint_regs;
-static struct regstruct regs_backup[16];
+RegStructType regs, lastint_regs;
+static RegStructType regs_backup[16];
 static int backup_pointer = 0;
 static long int m68kpc_offset;
 int lastint_no;
@@ -612,6 +612,9 @@ void MakeFromSR (void)
 
 void Exception(int nr, Ptr32 oldpc)
 {
+  printf( "exception %d oldpc=0x%08x\n", nr, oldpc );
+  dump_registers();
+
     compiler_flush_jsr_stack();
     MakeSR();
     if (!regs.s) {
