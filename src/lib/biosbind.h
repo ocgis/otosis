@@ -57,4 +57,21 @@ typedef struct {
     _MD *mp_rover;		/* rover memory descriptor */
 } _MPB;
 
+
+/* BIOS function prototypes */
+typedef void voidfunc(void);
+
+long Bconin(short);
+long Bconout(short);
+long Bconstat(short);
+long Bcostat(short);
+unsigned long Drvmap(void);
+Bpb *Getbpb(short);
+void Getmpb(void *);
+long Kbshift(short);
+long Mediach(short);
+long Rwabs(short,void *,short,short,short,long);
+voidfunc *Setexc(short,voidfunc *);
+long Tickcal(void);
+
 #endif /* _BIOSBIND_H_ */

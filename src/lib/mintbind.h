@@ -162,4 +162,112 @@ struct __ploadinfo {
 #define SIOCGARP	(('S' << 8) | 41)	/* get ARP table entry */
 #define SIOCSARP	(('S' << 8) | 42)	/* set ARP table entry */
 
+/* Structure used by Fxattr() */
+typedef struct {
+  unsigned short mode;		/* File type and access permissions */
+  long index;			/* Inode */
+  unsigned short dev;		/* Bios device */
+  unsigned short reserved1;	/* Reserved */
+  unsigned short nlink;		/* Number of links */
+  unsigned short uid;		/* uid */
+  unsigned short gid;		/* gid */
+  long size;			/* File size in bytes */
+  long blksize;			/* Block size */
+  long nblocks;			/* Blocks used by file*/
+  short mtime;			/* Time of last modification */
+  short mdate;			/* Date of last modification */
+  short atime;			/* Time of last access */
+  short adate;			/* Date of last access */
+  short ctime;			/* Time of file creation */
+  short cdate;			/* Date of file creation */
+  short attr;			/* Standard file attributes */
+  short reserved2;		/* Reserved */
+  long reserved3;		/* Reserved */
+  long reserved4;		/* Reserved */
+} _XATTR;
+
+/* Structure used by Pmsg() */
+typedef struct {
+  long userlong1;		/* User message */
+  long userlong2;		/* User message */
+  short pid;			/* pid of reader or writer */
+} _PMSG;
+
+/* Structure used by Psigaction() */
+typedef struct {
+  long sa_handler;
+  short sa_mask;
+  short sa_flags;
+} _SIGACTION;
+
+/* Alternative structure names, according to Atari Compendium */
+typedef _XATTR XATTR;
+typedef _PMSG PMSG;
+typedef _SIGACTION SIGACTION;
+
+
+/* MiNT function prototypes */
+typedef void voidfuncl(long);
+
+long Dclosedir(long);
+long Dcntl(short,char *,long);
+long Dgetcwd(char *,short,short);
+long Dlock(short,short);
+long Dopendir(char *,short);
+long Dpathconf(char *,short);
+long Dreaddir(short,long,char *);
+long Drewinddir(long);
+long Fchmod(char *,short);
+long Fchown(char *,short,short);
+long Fcntl(short,long,short);
+long Fgetchar(short,short);
+long Finstat(short);
+long Flink(char *,char *);
+long Fmidipipe(short,short,short);
+long Foutstat(short);
+long Fpipe(short *);
+long Fputchar(short,long,short);
+long Freadlink(short,char *,char *);
+short Fselect(short,long *,long *,long);
+long Fsymlink(char *,char *);
+long Fxattr(short,char *,XATTR *);
+void Pause(void);
+short Pdomain(short);
+short Pfork(void);
+short Pgetegid(void);
+short Pgeteuid(void);
+short Pgetgid(void);
+short Pgetpgrp(void);
+short Pgetpid(void);
+short Pgetppid(void);
+short Pgetuid(void);
+short Pkill(short,short);
+short Pmsg(short,long,PMSG *);
+short Pnice(short);
+long Prenice(short,short);
+void Prusage(long *);
+long Psemaphore(short,long,long);
+short Psetgid(short);
+long Psetlimit(short,long);
+long Psetpgrp(short,short);
+short Psetuid(short);
+long Psigaction(short,SIGACTION *,SIGACTION *);
+long Psigblock(long);
+long Psignal(short,voidfuncl *);
+long Psigpause(long);
+long Psigpending(void);
+void Psigreturn(void);
+long Psigsetmask(long);
+short Pumask(short);
+long Pusrval(long);
+short Pvfork(void);
+long Pwait(void);
+long Pwait3(short,long *);
+long Pwaitpid(short,short,long *);
+void Salert(char *);
+void Syield(void);
+long Sysconf(short);
+long Talarm(long);
+
+
 #endif /* _MINTBIND_H_ */

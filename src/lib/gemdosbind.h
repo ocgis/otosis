@@ -102,4 +102,67 @@ typedef struct basep {
     char	p_cmdlin[128];	/* command line image */
 } BASEPAGE;
 
+/* Alternative structure names, according to Atari Compendium */
+typedef _DISKINFO DISKINFO;
+typedef _DOSTIME DATETIME;
+typedef _DTA DTA;
+
+
+
+/* GEMDOS function prototypes */
+short Cauxin(void);
+short Cauxis(void);
+short Cauxos(void);
+void Cauxout(short);
+long Cconin(void);
+short Cconis(void);
+short Cconos(void);
+void Cconout(short);
+void Cconrs(char *);
+void Cconws(char *);
+short Cnecin(void);
+short Cprnos(void);
+short Cprnout(short);
+long Crawcin(void);
+long Crawio(short);
+long Dcreate(char *);
+long Ddelete(char *);
+long Dfree(DISKINFO *,short);
+short Dgetdrv(void);
+long Dgetpath(char *,short);
+long Dsetdrv(short);
+long Dsetpath(char *);
+long Fattrib(char *,short,short);
+long Fclose(short);
+long Fcreate(char *,short);
+long Fdatime(DATETIME *,short,short);
+long Fdelete(char *);
+long Fdup(short);
+long Fforce(short,short);
+DTA *Fgetdta(void);
+long Flock(short,short,long,long);
+long Fopen(char *,short);
+long Fread(short,long,void *);
+long Frename(short,char *,char *);
+long Fseek(long,short,short);
+void Fsetdta(DTA *);
+short Fsfirst(char *,short);
+short Fsnext(void);
+long Fwrite(short,long,void *);
+long Maddalt(void *,long);
+void *Malloc(long);
+short Mfree(void *);
+short Mshrink(void *,long);
+void *Mxalloc(long,short);
+long Pexec(short,char *,char *,char *);
+void Pterm(short);
+void Pterm0(void);
+void Ptermres(long,short);
+void *Super(void *);
+unsigned short Sversion(void);
+unsigned short Tgetdate(void);
+unsigned short Tgettime(void);
+short Tsetdate(unsigned short);
+short Tsettime(unsigned short);
+
 #endif /* _GEMDOSBIND_H_ */
