@@ -44,13 +44,15 @@
 #include "bios.h"
 #include "xbios.h"
 #include "gemdos.h"
+#ifdef USE_XGEMDOS
 #include "xgemdos.h"
+#endif
 #include "option.h"
 #include "vt52.h"
 
 /* Global variables */
 TosProgram *prog;
-int in_emu = 1;					/* 1 if in emulator, 0 if running tos prog */
+volatile int in_emu = 1;		/* 1 if in emulator, 0 if running tos prog */
 char *TosPrgName;				/* basename of TOS program */
 ulong *malloc_regions;			/* list of malloced memory regions */
 int malloc_regions_size;		/* size of malloc_regions */
@@ -215,11 +217,13 @@ void sigill_handler( int sig, int vec, struct sigcontext *s )
 		case 1:
 		  s->sc_d0 = dispatch_gemdos( (char *)s->sc_usp );
 		  break;
+#ifdef USE_XGEMDOS
 		case 2:
 		  /* xgemdos is special case, arguments aren't sent through stack
 		     This method will do for now */
 		  dispatch_xgemdos( s->sc_d0, s->sc_d1 );
 		  break;
+#endif
 		case 13:
 		  s->sc_d0 = dispatch_bios( (char *)s->sc_usp );
 		  break;
@@ -261,16 +265,20 @@ void setup_tty( void )
    */
   setup_vt52();
   
+#ifdef USE_XGEMDOS
   /* This will open the framebuffer by calling v_opnwk() */
   if( prog->gem )
     init_xgemdos();
+#endif
 }
 
 void restore_tty( void )
 {
+#ifdef USE_XGEMDOS
   /* This will close the framebuffer by calling v_clswk() */
   if( prog->gem )
     exit_xgemdos();
+#endif
 
   ioctl( 0, TCSETS, &old_termios );
   has_setup_tty = 0;
