@@ -3,6 +3,7 @@
  *  oTOSis - TOS emulator for Linux/68K
  *
  *  Copyright 1999 - 2001 Christer Gustavsson <cg@nocrew.org>
+ *  Copyright 2001 Thomas Huth <thomas.huth@student.uni-ulm.de>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -310,6 +311,19 @@ emulate(TosProgram * prog)
 
   fill_template(cpu);
 
+  cpu->init_isp = malloc(4096);  /* 4096 Bytes should be enough, I hope */
+  if( cpu->init_isp==0L )
+    cpu->init_isp = cpu->init_areg[7];  /* Should never happen! */
+  else
+    cpu->init_isp += 4000;
+  
+  cpu->init_msp = malloc(4096);  /* Same for the msp - normally not needed,
+				    but you never know... */
+  if( cpu->init_msp==0L )
+    cpu->init_msp = cpu->init_areg[7];
+  else
+    cpu->init_msp += 4000;
+  
   CPUinit(cpu);
   CPUrun();
 }
