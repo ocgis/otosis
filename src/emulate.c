@@ -21,6 +21,7 @@
  ************************************************************************/
 
 #include <netinet/in.h>
+#include <oaesis.h>
 #include <ocpuis.h>
 #include <stdio.h>
 
@@ -199,12 +200,40 @@ fill_template(CPU * cpu)
 }
 
 
+/*
+** Description
+** Handle callback from oAESis resources
+*/
+static
+int
+handle_callback(void * subroutine,
+                long   argument)
+{
+  CPUlong sp;
+
+  sp = CPUget_areg(7);
+  sp -= 4;
+  my_put_long((CPUaddr)sp, argument);
+  CPUset_areg(7, sp);
+
+  CPUsubroutine((CPUaddr)subroutine);
+
+  sp += 4;
+  CPUset_areg(7, sp);
+
+  return CPUget_dreg(0);
+}
+
+
 void
 emulate(TosProgram * prog)
 {
   CPU *   cpu;
   CPUaddr sp;
   my_prog = prog;
+
+  /* Setup a callback handler for oAESis */
+  Oaesis_callback_handler(handle_callback);
 
   /* Setup a pointer to basepage and clear one long */
   sp = ntohl((CPUaddr)prog->basepage->hitpa);
