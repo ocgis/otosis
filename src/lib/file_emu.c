@@ -31,7 +31,7 @@
 #include "toserrors.h"
 
 
-extern TosProgram *prog;
+TosProgram * prog = NULL;
 
 
 /*

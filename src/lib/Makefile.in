@@ -72,6 +72,8 @@ PACKAGE = @PACKAGE@
 RANLIB = @RANLIB@
 VERSION = @VERSION@
 
+CFLAGS = -Wall
+
 INCLUDES = -I../../include
 
 osisdir = @OSISINCLUDE@
@@ -98,12 +100,18 @@ xbios_sources = \
 xgemdos_sources = \
 	xgemdos.c xgemdos_dispatch.c xgemdosbind.c
 
+common_sources = \
+	file_emu.c init.c init.h malloc.c optiondef.c scancode_us.c tty.c
+
+BUILT_SOURCES =  optiondef.c scancode_us.c
+
 libotosis_la_SOURCES = \
 	${bios_sources} \
 	${gemdos_sources} \
 	${hwreg_sources} \
 	${mint_sources} \
-	${xbios_sources}
+	${xbios_sources} \
+	${common_sources}
 
 libotosis_la_LDFLAGS = @LT_VERSION_INFO@
 
@@ -124,8 +132,8 @@ libotosis_la_OBJECTS =  bios_chardev.lo bios_dispatch.lo bios_misc.lo \
 bios_vt52.lo biosbind.lo gemdos_chardev.lo gemdos_dispatch.lo \
 gemdos_file.lo gemdos_mem.lo gemdos_proc.lo gemdosbind.lo \
 hwreg_dispatch.lo mint_dispatch.lo mint_file.lo mint_proc.lo \
-mintbind.lo xbios_dispatch.lo xbios_hw.lo xbiosbind.lo
-CFLAGS = @CFLAGS@
+mintbind.lo xbios_dispatch.lo xbios_hw.lo xbiosbind.lo file_emu.lo \
+init.lo malloc.lo optiondef.lo scancode_us.lo tty.lo
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(CPPFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(INCLUDES) $(CPPFLAGS) $(CFLAGS)
 LINK = $(LIBTOOL) --mode=link $(CC) $(CFLAGS) $(LDFLAGS) -o $@
@@ -139,12 +147,14 @@ DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 TAR = tar
 GZIP = --best
 DEP_FILES =  .deps/bios_chardev.P .deps/bios_dispatch.P \
-.deps/bios_misc.P .deps/bios_vt52.P .deps/biosbind.P \
+.deps/bios_misc.P .deps/bios_vt52.P .deps/biosbind.P .deps/file_emu.P \
 .deps/gemdos_chardev.P .deps/gemdos_dispatch.P .deps/gemdos_file.P \
 .deps/gemdos_mem.P .deps/gemdos_proc.P .deps/gemdosbind.P \
-.deps/hwreg_dispatch.P .deps/mint_dispatch.P .deps/mint_file.P \
-.deps/mint_proc.P .deps/mintbind.P .deps/xbios_dispatch.P \
-.deps/xbios_hw.P .deps/xbiosbind.P
+.deps/hwreg_dispatch.P .deps/init.P .deps/malloc.P \
+.deps/mint_dispatch.P .deps/mint_file.P .deps/mint_proc.P \
+.deps/mintbind.P .deps/optiondef .deps/optiondef.P .deps/scancode_us \
+.deps/scancode_us.P .deps/tty.P .deps/xbios_dispatch.P .deps/xbios_hw.P \
+.deps/xbiosbind.P
 SOURCES = $(libotosis_la_SOURCES)
 OBJECTS = $(libotosis_la_OBJECTS)
 
@@ -368,6 +378,12 @@ install uninstall all installdirs mostlyclean-generic distclean-generic \
 clean-generic maintainer-clean-generic clean mostlyclean distclean \
 maintainer-clean
 
+
+optiondef.c: ../../tools/options_to_c.awk ../../options.def
+	$(AWK) -f ../../tools/options_to_c.awk < ../../options.def > optiondef.c
+
+scancode_us.c: ../../tools/make_scancode ../../scancode.us
+	../../tools/make_scancode ../../scancode.us > scancode_us.c
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

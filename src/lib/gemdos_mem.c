@@ -46,8 +46,8 @@
  *
  */
 
-extern ulong *malloc_regions;
-extern int malloc_regions_size;
+ulong *malloc_regions = NULL;
+int malloc_regions_size = 0;
 
 GEMDOS_UNIMP(Maddalt);
 
@@ -73,6 +73,12 @@ GEMDOSFUNC(Malloc)
 
   if( size == -1 )  return Opt_mem_free*1024;
   addr = (ulong)malloc( size );
+
+  if (malloc_regions == NULL) {
+    malloc_regions = malloc (sizeof (ulong) * 10);
+    malloc_regions_size = 10;
+  }
+
   for( w = malloc_regions ; *w && *w != -1 ; w++ );
   if( *w == 0 ) {
     if( w - malloc_regions >= malloc_regions_size ) {
@@ -93,8 +99,8 @@ GEMDOSFUNC(Mfree)
 
 /* Mfree should return a negative error code if it fails,
    does anybody know what error codes Free might return? */
-
   for( w = malloc_regions ; *w && *w != (ulong)addr ; w++ );
+
   if( *w ) {
     *w = -1;
     free( addr );

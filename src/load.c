@@ -39,7 +39,7 @@ static int relocate_program( TosBasepage *bp, TosExecHeader *hdr, FILE *fp );
 
 TosProgram *load_tos_program( char *filename )
 {
-  TosProgram *prog = mymalloc( sizeof( TosProgram ) );
+  TosProgram * prog;
   TosExecHeader *hdr;
   TosBasepage *bp;
   void *prg, *buf;
@@ -47,6 +47,9 @@ TosProgram *load_tos_program( char *filename )
   FILE *fp;
   char *env, *src, *dest;
   char ascii_num[ 4 ];
+
+  /* Allocate a new program structure */
+  prog = new_program ();
 
   /* Set up the MiNT emulation flag */
   prog->emulate_mint = Opt_MiNT;

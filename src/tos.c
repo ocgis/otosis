@@ -5,6 +5,7 @@
  *  Copyright 1996 Elias Martenson <elias@omicron.se>
  *  Copyright 1996 Roman Hodek <Roman.Hodek@informatik.uni-erlangen.de>
  *  Copyright 1998 Tomas Berndtsson <tomas@nocrew.org>
+ *  Copyright 1999 Christer Gustavsson <cg@nocrew.org>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -41,6 +42,7 @@
 */
 
 #include "div.h"
+#include "init.h"
 #include "version.h"
 #include "prototypes.h"
 #include "sysvars.h"
@@ -55,14 +57,11 @@
 #include "vt52.h"
 
 /* Global variables */
-TosProgram *prog;
-volatile int in_emu = 1;		/* 1 if in emulator, 0 if running tos prog */
-char *TosPrgName;			/* basename of TOS program */
-ulong *malloc_regions;			/* list of malloced memory regions */
-int malloc_regions_size;		/* size of malloc_regions */
-
-static struct termios old_termios;
-static int has_setup_tty = 0;
+extern TosProgram *prog;
+extern volatile int in_emu;		 /* 1 if in emulator, 0 if running tos prog */
+char *TosPrgName;			     /* basename of TOS program */
+extern ulong *malloc_regions;    /* list of malloced memory regions */
+extern int malloc_regions_size;	 /* size of malloc_regions */
 
 #define DEFAULT_PRG	""			/* should be the GEM desktop later */
 
@@ -258,67 +257,6 @@ void sigill_handler( int sig, int vec, struct sigcontext *s )
   }
 #endif /* 0 end FIXME */
   in_emu = 0;
-}
-
-void setup_tty( void )
-{
-  struct termios flags;
-
-  ioctl( 0, TCGETS, &flags );
-  old_termios = flags;
-  flags.c_iflag &= ~(INLCR | ICRNL);
-  flags.c_lflag &= ~(ECHO | ECHOE | ECHOK | ICANON);
-  flags.c_oflag &= ~ONLRET;
-  ioctl( 0, TCSETS, &flags );
-  has_setup_tty = 1;
-
-  /*
-   *  Set up everything that is needed for the vt52 emulator
-   */
-  setup_vt52();
-  
-#ifdef USE_XGEMDOS
-  /* This will open the framebuffer by calling v_opnwk() */
-  if( prog->gem )
-    init_xgemdos();
-#endif
-}
-
-void restore_tty( void )
-{
-#ifdef USE_XGEMDOS
-  /* This will close the framebuffer by calling v_clswk() */
-  if( prog->gem )
-    exit_xgemdos();
-#endif
-
-  ioctl( 0, TCSETS, &old_termios );
-  has_setup_tty = 0;
-}
-
-void switch_tty_mode( void )
-{
-  static struct termios switched_tty;
-  static int is_switched = 0;
-
-  if( !is_switched ) {
-    ioctl( 0, TCGETS, &switched_tty );
-    ioctl( 0, TCSETS, &old_termios );
-    is_switched = 1;
-  }
-  else {
-    ioctl( 0, TCSETS, &switched_tty );
-    is_switched = 0;
-  }
-}
-
-/* restore tty and exit */
-void rexit( int code )
-{
-  if( has_setup_tty ) {
-	restore_tty();
-  }
-  exit( code );
 }
 
 void setup_sysvars( void )

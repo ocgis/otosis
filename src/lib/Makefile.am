@@ -1,3 +1,5 @@
+CFLAGS = -Wall
+
 INCLUDES = -I../../include
 
 osisdir = @OSISINCLUDE@
@@ -24,12 +26,24 @@ xbios_sources = \
 xgemdos_sources = \
 	xgemdos.c xgemdos_dispatch.c xgemdosbind.c
 
+common_sources = \
+	file_emu.c init.c init.h malloc.c optiondef.c scancode_us.c tty.c
+
+BUILT_SOURCES =  optiondef.c scancode_us.c
+
 libotosis_la_SOURCES = \
 	${bios_sources} \
 	${gemdos_sources} \
 	${hwreg_sources} \
 	${mint_sources} \
-	${xbios_sources}
+	${xbios_sources} \
+	${common_sources}
+
+optiondef.c: ../../tools/options_to_c.awk ../../options.def
+	$(AWK) -f ../../tools/options_to_c.awk < ../../options.def > optiondef.c
+
+scancode_us.c: ../../tools/make_scancode ../../scancode.us
+	../../tools/make_scancode ../../scancode.us > scancode_us.c
 
 libotosis_la_LDFLAGS = @LT_VERSION_INFO@
 
