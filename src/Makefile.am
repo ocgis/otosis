@@ -10,7 +10,7 @@ tos_SOURCES = tos.c version.c load.c optfile.c traps.c file_emu.c \
 	malloc.c trace.c strace.c \
 	scancode_us.c optiondef.c
 
-tos_LDADD = lib/libotosis.a
+tos_LDADD = lib/libotosis.la
 
 # FIXME
 #tos_LDFLAGS = -Wl,-Telf-ldscript.x

@@ -1,5 +1,5 @@
-noinst_LIBRARIES = libbios.a
+#noinst_LTLIBRARIES = libbios.la
 
 INCLUDES = -I../../../include
 
-libbios_a_SOURCES = dispatch_bios.c chardev.c misc.c vt52.c
+#libbios_la_SOURCES = dispatch_bios.c chardev.c misc.c vt52.c

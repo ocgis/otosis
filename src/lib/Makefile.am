@@ -1,17 +1,37 @@
-SUBDIRS = bios gemdos hwreg mint xbios #xgemdos
-
 INCLUDES = -I../../include
 
-noinst_LIBRARIES = libotosis.a
+osisdir = @OSISINCLUDE@
+osis_HEADERS = biosbind.h gemdosbind.h mintbind.h xbiosbind.h
 
-libotosis_a_SOURCES = biosbind.c gemdosbind.c mintbind.c \
-	xbiosbind.c #xgemdosbind.c
+lib_LTLIBRARIES = libotosis.la
 
-libotosis_a_LIBADD = \
-	bios/dispatch_bios.o bios/chardev.o bios/misc.o bios/vt52.o \
-	gemdos/dispatch_gemdos.o gemdos/chardev.o gemdos/file.o \
-		gemdos/mem.o gemdos/proc.o \
-	hwreg/dispatch_hwreg.o \
-	mint/dispatch_mint.o mint/file.o mint/proc.o \
-	xbios/dispatch_xbios.o xbios/hw.o #\
-#	xgemdos/dispatch_xgemdos.o xgemdos/xgemdos.o
+bios_sources = \
+	 bios_chardev.c bios_dispatch.c bios_misc.c bios_vt52.c biosbind.c
+
+gemdos_sources = \
+	gemdos_chardev.c gemdos_dispatch.c gemdos_file.c gemdos_mem.c \
+	gemdos_proc.c gemdosbind.c
+
+hwreg_sources = \
+	hwreg_dispatch.c
+
+mint_sources = \
+	mint_dispatch.c mint_file.c mint_proc.c mintbind.c
+
+xbios_sources = \
+	xbios_dispatch.c xbios_hw.c xbiosbind.c
+
+xgemdos_sources = \
+	xgemdos.c xgemdos_dispatch.c xgemdosbind.c
+
+libotosis_la_SOURCES = \
+	${bios_sources} \
+	${gemdos_sources} \
+	${hwreg_sources} \
+	${mint_sources} \
+	${xbios_sources}
+
+libotosis_la_LDFLAGS = @LT_VERSION_INFO@
+
+EXTRA_DIST =\
+	${xgemdos_sources}

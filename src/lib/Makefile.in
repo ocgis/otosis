@@ -10,6 +10,7 @@
 # even the implied warranty of MERCHANTABILITY or FITNESS FOR A
 # PARTICULAR PURPOSE.
 
+
 SHELL = /bin/sh
 
 srcdir = @srcdir@
@@ -56,49 +57,80 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
+host_alias = @host_alias@
+host_triplet = @host@
 AWK = @AWK@
 CC = @CC@
+LD = @LD@
+LIBTOOL = @LIBTOOL@
+LN_S = @LN_S@
+LT_VERSION_INFO = @LT_VERSION_INFO@
 MAKEINFO = @MAKEINFO@
+NM = @NM@
+OSISINCLUDE = @OSISINCLUDE@
 PACKAGE = @PACKAGE@
 RANLIB = @RANLIB@
 VERSION = @VERSION@
 
-SUBDIRS = bios gemdos hwreg mint xbios #xgemdos
-
 INCLUDES = -I../../include
 
-noinst_LIBRARIES = libotosis.a
+osisdir = @OSISINCLUDE@
+osis_HEADERS = biosbind.h gemdosbind.h mintbind.h xbiosbind.h
 
-libotosis_a_SOURCES = biosbind.c gemdosbind.c mintbind.c \
-	xbiosbind.c #xgemdosbind.c
+lib_LTLIBRARIES = libotosis.la
 
-libotosis_a_LIBADD = \
-	bios/dispatch_bios.o bios/chardev.o bios/misc.o bios/vt52.o \
-	gemdos/dispatch_gemdos.o gemdos/chardev.o gemdos/file.o \
-		gemdos/mem.o gemdos/proc.o \
-	hwreg/dispatch_hwreg.o \
-	mint/dispatch_mint.o mint/file.o mint/proc.o \
-	xbios/dispatch_xbios.o xbios/hw.o #\
+bios_sources = \
+	 bios_chardev.c bios_dispatch.c bios_misc.c bios_vt52.c biosbind.c
+
+gemdos_sources = \
+	gemdos_chardev.c gemdos_dispatch.c gemdos_file.c gemdos_mem.c \
+	gemdos_proc.c gemdosbind.c
+
+hwreg_sources = \
+	hwreg_dispatch.c
+
+mint_sources = \
+	mint_dispatch.c mint_file.c mint_proc.c mintbind.c
+
+xbios_sources = \
+	xbios_dispatch.c xbios_hw.c xbiosbind.c
+
+xgemdos_sources = \
+	xgemdos.c xgemdos_dispatch.c xgemdosbind.c
+
+libotosis_la_SOURCES = \
+	${bios_sources} \
+	${gemdos_sources} \
+	${hwreg_sources} \
+	${mint_sources} \
+	${xbios_sources}
+
+libotosis_la_LDFLAGS = @LT_VERSION_INFO@
+
+EXTRA_DIST =\
+	${xgemdos_sources}
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../../config.h
 CONFIG_CLEAN_FILES = 
-LIBRARIES =  $(noinst_LIBRARIES)
+LTLIBRARIES =  $(lib_LTLIBRARIES)
 
 
 DEFS = @DEFS@ -I. -I$(srcdir) -I../..
 CPPFLAGS = @CPPFLAGS@
 LDFLAGS = @LDFLAGS@
 LIBS = @LIBS@
-libotosis_a_DEPENDENCIES =  bios/dispatch_bios.o bios/chardev.o \
-bios/misc.o bios/vt52.o gemdos/dispatch_gemdos.o gemdos/chardev.o \
-gemdos/file.o gemdos/mem.o gemdos/proc.o hwreg/dispatch_hwreg.o \
-mint/dispatch_mint.o mint/file.o mint/proc.o xbios/dispatch_xbios.o \
-xbios/hw.o
-libotosis_a_OBJECTS =  biosbind.o gemdosbind.o mintbind.o xbiosbind.o
-AR = ar
+libotosis_la_LIBADD = 
+libotosis_la_OBJECTS =  bios_chardev.lo bios_dispatch.lo bios_misc.lo \
+bios_vt52.lo biosbind.lo gemdos_chardev.lo gemdos_dispatch.lo \
+gemdos_file.lo gemdos_mem.lo gemdos_proc.lo gemdosbind.lo \
+hwreg_dispatch.lo mint_dispatch.lo mint_file.lo mint_proc.lo \
+mintbind.lo xbios_dispatch.lo xbios_hw.lo xbiosbind.lo
 CFLAGS = @CFLAGS@
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(CPPFLAGS) $(CFLAGS)
-LINK = $(CC) $(CFLAGS) $(LDFLAGS) -o $@
+LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(INCLUDES) $(CPPFLAGS) $(CFLAGS)
+LINK = $(LIBTOOL) --mode=link $(CC) $(CFLAGS) $(LDFLAGS) -o $@
+HEADERS =  $(osis_HEADERS)
+
 DIST_COMMON =  Makefile.am Makefile.in
 
 
@@ -106,15 +138,20 @@ DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
 TAR = tar
 GZIP = --best
-DEP_FILES =  .deps/biosbind.P .deps/gemdosbind.P .deps/mintbind.P \
-.deps/xbiosbind.P
-SOURCES = $(libotosis_a_SOURCES)
-OBJECTS = $(libotosis_a_OBJECTS)
+DEP_FILES =  .deps/bios_chardev.P .deps/bios_dispatch.P \
+.deps/bios_misc.P .deps/bios_vt52.P .deps/biosbind.P \
+.deps/gemdos_chardev.P .deps/gemdos_dispatch.P .deps/gemdos_file.P \
+.deps/gemdos_mem.P .deps/gemdos_proc.P .deps/gemdosbind.P \
+.deps/hwreg_dispatch.P .deps/mint_dispatch.P .deps/mint_file.P \
+.deps/mint_proc.P .deps/mintbind.P .deps/xbios_dispatch.P \
+.deps/xbios_hw.P .deps/xbiosbind.P
+SOURCES = $(libotosis_la_SOURCES)
+OBJECTS = $(libotosis_la_OBJECTS)
 
-all: all-recursive all-am
+all: Makefile $(LTLIBRARIES) $(HEADERS)
 
 .SUFFIXES:
-.SUFFIXES: .S .c .o .s
+.SUFFIXES: .S .c .lo .o .s
 $(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4)
 	cd $(top_srcdir) && $(AUTOMAKE) --gnu src/lib/Makefile
 
@@ -123,14 +160,30 @@ Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
 	  && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
 
 
-mostlyclean-noinstLIBRARIES:
+mostlyclean-libLTLIBRARIES:
 
-clean-noinstLIBRARIES:
-	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
+clean-libLTLIBRARIES:
+	-test -z "$(lib_LTLIBRARIES)" || rm -f $(lib_LTLIBRARIES)
 
-distclean-noinstLIBRARIES:
+distclean-libLTLIBRARIES:
 
-maintainer-clean-noinstLIBRARIES:
+maintainer-clean-libLTLIBRARIES:
+
+install-libLTLIBRARIES: $(lib_LTLIBRARIES)
+	@$(NORMAL_INSTALL)
+	$(mkinstalldirs) $(DESTDIR)$(libdir)
+	@list='$(lib_LTLIBRARIES)'; for p in $$list; do \
+	  if test -f $$p; then \
+	    echo "$(LIBTOOL)  --mode=install $(INSTALL_DATA) $$p $(DESTDIR)$(libdir)/$$p"; \
+	    $(LIBTOOL)  --mode=install $(INSTALL_DATA) $$p $(DESTDIR)$(libdir)/$$p; \
+	  else :; fi; \
+	done
+
+uninstall-libLTLIBRARIES:
+	@$(NORMAL_UNINSTALL)
+	list='$(lib_LTLIBRARIES)'; for p in $$list; do \
+	  $(LIBTOOL)  --mode=uninstall rm -f $(DESTDIR)$(libdir)/$$p; \
+	done
 
 .s.o:
 	$(COMPILE) -c $<
@@ -148,46 +201,38 @@ distclean-compile:
 
 maintainer-clean-compile:
 
-libotosis.a: $(libotosis_a_OBJECTS) $(libotosis_a_DEPENDENCIES)
-	-rm -f libotosis.a
-	$(AR) cru libotosis.a $(libotosis_a_OBJECTS) $(libotosis_a_LIBADD)
-	$(RANLIB) libotosis.a
+.s.lo:
+	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
 
-# This directory's subdirectories are mostly independent; you can cd
-# into them and run `make' without going through this Makefile.
-# To change the values of `make' variables: instead of editing Makefiles,
-# (1) if the variable is set in `config.status', edit `config.status'
-#     (which will cause the Makefiles to be regenerated when you run `make');
-# (2) otherwise, pass the desired values on the `make' command line.
+.S.lo:
+	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
 
-@SET_MAKE@
+mostlyclean-libtool:
+	-rm -f *.lo
 
-all-recursive install-data-recursive install-exec-recursive \
-installdirs-recursive install-recursive uninstall-recursive  \
-check-recursive installcheck-recursive info-recursive dvi-recursive:
-	@set fnord $(MAKEFLAGS); amf=$$2; \
-	list='$(SUBDIRS)'; for subdir in $$list; do \
-	  target=`echo $@ | sed s/-recursive//`; \
-	  echo "Making $$target in $$subdir"; \
-	  (cd $$subdir && $(MAKE) $$target) \
-	   || case "$$amf" in *=*) exit 1;; *k*) fail=yes;; *) exit 1;; esac; \
-	done && test -z "$$fail"
+clean-libtool:
+	-rm -rf .libs _libs
 
-mostlyclean-recursive clean-recursive distclean-recursive \
-maintainer-clean-recursive:
-	@set fnord $(MAKEFLAGS); amf=$$2; \
-	rev=''; list='$(SUBDIRS)'; for subdir in $$list; do \
-	  rev="$$subdir $$rev"; \
-	done; \
-	for subdir in $$rev; do \
-	  target=`echo $@ | sed s/-recursive//`; \
-	  echo "Making $$target in $$subdir"; \
-	  (cd $$subdir && $(MAKE) $$target) \
-	   || case "$$amf" in *=*) exit 1;; *k*) fail=yes;; *) exit 1;; esac; \
-	done && test -z "$$fail"
-tags-recursive:
-	list='$(SUBDIRS)'; for subdir in $$list; do \
-	  (cd $$subdir && $(MAKE) tags); \
+distclean-libtool:
+
+maintainer-clean-libtool:
+
+libotosis.la: $(libotosis_la_OBJECTS) $(libotosis_la_DEPENDENCIES)
+	$(LINK) -rpath $(libdir) $(libotosis_la_LDFLAGS) $(libotosis_la_OBJECTS) $(libotosis_la_LIBADD) $(LIBS)
+
+install-osisHEADERS: $(osis_HEADERS)
+	@$(NORMAL_INSTALL)
+	$(mkinstalldirs) $(DESTDIR)$(osisdir)
+	@list='$(osis_HEADERS)'; for p in $$list; do \
+	  if test -f "$$p"; then d= ; else d="$(srcdir)/"; fi; \
+	  echo " $(INSTALL_DATA) $$d$$p $(DESTDIR)$(osisdir)/$$p"; \
+	  $(INSTALL_DATA) $$d$$p $(DESTDIR)$(osisdir)/$$p; \
+	done
+
+uninstall-osisHEADERS:
+	@$(NORMAL_UNINSTALL)
+	list='$(osis_HEADERS)'; for p in $$list; do \
+	  rm -f $(DESTDIR)$(osisdir)/$$p; \
 	done
 
 tags: TAGS
@@ -196,12 +241,9 @@ ID: $(HEADERS) $(SOURCES) $(LISP)
 	here=`pwd` && cd $(srcdir) \
 	  && mkid -f$$here/ID $(SOURCES) $(HEADERS) $(LISP)
 
-TAGS: tags-recursive $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) $(LISP)
+TAGS:  $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) $(LISP)
 	tags=; \
 	here=`pwd`; \
-	list='$(SUBDIRS)'; for subdir in $$list; do \
-	  test -f $$subdir/TAGS && tags="$$tags -i $$here/$$subdir/TAGS"; \
-	done; \
 	list='$(SOURCES) $(HEADERS)'; \
 	unique=`for i in $$list; do echo $$i; done | \
 	  awk '    { files[$$0] = 1; } \
@@ -234,14 +276,6 @@ distdir: $(DISTFILES)
 	  || ln $$d/$$file $(distdir)/$$file 2> /dev/null \
 	  || cp -p $$d/$$file $(distdir)/$$file; \
 	done
-	for subdir in $(SUBDIRS); do \
-	  test -d $(distdir)/$$subdir \
-	  || mkdir $(distdir)/$$subdir \
-	  || exit 1; \
-	  chmod 777 $(distdir)/$$subdir; \
-	  (cd $$subdir && $(MAKE) top_distdir=../$(top_distdir) distdir=../$(distdir)/$$subdir distdir) \
-	    || exit 1; \
-	done
 
 DEPS_MAGIC := $(shell mkdir .deps > /dev/null 2>&1 || :)
 
@@ -266,27 +300,26 @@ maintainer-clean-depend:
 	@-sed -e 's/^\([^:]*\)\.o:/\1.lo \1.o:/' \
 	  < .deps/$(*F).p > .deps/$(*F).P
 	@-rm -f .deps/$(*F).p
-info: info-recursive
-dvi: dvi-recursive
-check: all-am
-	$(MAKE) check-recursive
-installcheck: installcheck-recursive
-all-am: Makefile $(LIBRARIES)
-
-install-exec: install-exec-recursive
+info:
+dvi:
+check: all
+	$(MAKE)
+installcheck:
+install-exec: install-libLTLIBRARIES
 	@$(NORMAL_INSTALL)
 
-install-data: install-data-recursive
+install-data: install-osisHEADERS
 	@$(NORMAL_INSTALL)
 
-install: install-recursive
+install: install-exec install-data all
 	@:
 
-uninstall: uninstall-recursive
+uninstall: uninstall-libLTLIBRARIES uninstall-osisHEADERS
 
 install-strip:
 	$(MAKE) INSTALL_PROGRAM='$(INSTALL_PROGRAM) -s' INSTALL_SCRIPT='$(INSTALL_PROGRAM)' install
-installdirs: installdirs-recursive
+installdirs:
+	$(mkinstalldirs)  $(DATADIR)$(libdir) $(DATADIR)$(osisdir)
 
 
 mostlyclean-generic:
@@ -303,49 +336,38 @@ distclean-generic:
 maintainer-clean-generic:
 	-test -z "$(MAINTAINERCLEANFILES)" || rm -f $(MAINTAINERCLEANFILES)
 	-test -z "$(BUILT_SOURCES)" || rm -f $(BUILT_SOURCES)
-mostlyclean-am:  mostlyclean-noinstLIBRARIES mostlyclean-compile \
-		mostlyclean-tags mostlyclean-depend mostlyclean-generic
+mostlyclean:  mostlyclean-libLTLIBRARIES mostlyclean-compile \
+		mostlyclean-libtool mostlyclean-tags mostlyclean-depend \
+		mostlyclean-generic
 
-clean-am:  clean-noinstLIBRARIES clean-compile clean-tags clean-depend \
-		clean-generic mostlyclean-am
+clean:  clean-libLTLIBRARIES clean-compile clean-libtool clean-tags \
+		clean-depend clean-generic mostlyclean
 
-distclean-am:  distclean-noinstLIBRARIES distclean-compile \
-		distclean-tags distclean-depend distclean-generic \
-		clean-am
-
-maintainer-clean-am:  maintainer-clean-noinstLIBRARIES \
-		maintainer-clean-compile maintainer-clean-tags \
-		maintainer-clean-depend maintainer-clean-generic \
-		distclean-am
-
-mostlyclean:  mostlyclean-recursive mostlyclean-am
-
-clean:  clean-recursive clean-am
-
-distclean:  distclean-recursive distclean-am
+distclean:  distclean-libLTLIBRARIES distclean-compile distclean-libtool \
+		distclean-tags distclean-depend distclean-generic clean
 	-rm -f config.status
+	-rm -f libtool
 
-maintainer-clean:  maintainer-clean-recursive maintainer-clean-am
+maintainer-clean:  maintainer-clean-libLTLIBRARIES \
+		maintainer-clean-compile maintainer-clean-libtool \
+		maintainer-clean-tags maintainer-clean-depend \
+		maintainer-clean-generic distclean
 	@echo "This command is intended for maintainers to use;"
 	@echo "it deletes files that may require special tools to rebuild."
 
-.PHONY: mostlyclean-noinstLIBRARIES distclean-noinstLIBRARIES \
-clean-noinstLIBRARIES maintainer-clean-noinstLIBRARIES \
-mostlyclean-compile distclean-compile clean-compile \
-maintainer-clean-compile install-data-recursive \
-uninstall-data-recursive install-exec-recursive \
-uninstall-exec-recursive installdirs-recursive uninstalldirs-recursive \
-all-recursive check-recursive installcheck-recursive info-recursive \
-dvi-recursive mostlyclean-recursive distclean-recursive clean-recursive \
-maintainer-clean-recursive tags tags-recursive mostlyclean-tags \
-distclean-tags clean-tags maintainer-clean-tags distdir \
-mostlyclean-depend distclean-depend clean-depend \
-maintainer-clean-depend info dvi installcheck all-am install-exec \
-install-data install uninstall all installdirs mostlyclean-generic \
-distclean-generic clean-generic maintainer-clean-generic clean \
-mostlyclean distclean maintainer-clean
+.PHONY: mostlyclean-libLTLIBRARIES distclean-libLTLIBRARIES \
+clean-libLTLIBRARIES maintainer-clean-libLTLIBRARIES \
+uninstall-libLTLIBRARIES install-libLTLIBRARIES mostlyclean-compile \
+distclean-compile clean-compile maintainer-clean-compile \
+mostlyclean-libtool distclean-libtool clean-libtool \
+maintainer-clean-libtool uninstall-osisHEADERS install-osisHEADERS tags \
+mostlyclean-tags distclean-tags clean-tags maintainer-clean-tags \
+distdir mostlyclean-depend distclean-depend clean-depend \
+maintainer-clean-depend info dvi installcheck install-exec install-data \
+install uninstall all installdirs mostlyclean-generic distclean-generic \
+clean-generic maintainer-clean-generic clean mostlyclean distclean \
+maintainer-clean
 
-#	xgemdos/dispatch_xgemdos.o xgemdos/xgemdos.o
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

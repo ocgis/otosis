@@ -57,9 +57,17 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
+host_alias = @host_alias@
+host_triplet = @host@
 AWK = @AWK@
 CC = @CC@
+LD = @LD@
+LIBTOOL = @LIBTOOL@
+LN_S = @LN_S@
+LT_VERSION_INFO = @LT_VERSION_INFO@
 MAKEINFO = @MAKEINFO@
+NM = @NM@
+OSISINCLUDE = @OSISINCLUDE@
 PACKAGE = @PACKAGE@
 RANLIB = @RANLIB@
 VERSION = @VERSION@
@@ -78,7 +86,7 @@ DIST_COMMON =  Makefile.am Makefile.in
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
-TAR = gtar
+TAR = tar
 GZIP = --best
 all: Makefile $(INFO_DEPS)
 
@@ -265,6 +273,7 @@ clean:  clean-aminfo clean-generic mostlyclean
 
 distclean:  distclean-aminfo distclean-generic clean
 	-rm -f config.status
+	-rm -f libtool
 
 maintainer-clean:  maintainer-clean-aminfo maintainer-clean-generic \
 		distclean

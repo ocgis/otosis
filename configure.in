@@ -1,15 +1,23 @@
 dnl Process this file with autoconf to produce a configure script.
 AC_INIT(src/tos.c)
 
-dnl For automake
-PACKAGE=otosis
-VERSION=0.30
+. $srcdir/OTOSIS-VERSION
+
+dnl libtool versioning
+LT_RELEASE=$OTOSIS_MAJOR_VERSION.$OTOSIS_MINOR_VERSION
+LT_CURRENT=`expr $OTOSIS_MICRO_VERSION - $OTOSIS_INTERFACE_AGE`
+LT_REVISION=$OTOSIS_INTERFACE_AGE
+LT_AGE=`expr $OTOSIS_BINARY_AGE - $OTOSIS_INTERFACE_AGE`
+LT_VERSION_INFO="-version-info $LT_CURRENT:$LT_REVISION:$LT_AGE"
 
 dnl Initialize automake macros
 AM_INIT_AUTOMAKE($PACKAGE, $VERSION, no-define)
 
 dnl Make a header with the things we find.
 AM_CONFIG_HEADER(config.h)
+
+dnl Use libtool to create libotosis
+AM_PROG_LIBTOOL
 
 dnl Set CFLAGS
 CFLAGS="$CFLAGS"
@@ -50,16 +58,20 @@ AC_FUNC_SETVBUF_REVERSED
 AC_FUNC_VPRINTF
 AC_CHECK_FUNCS(getcwd mkdir rmdir select strerror strspn strtol)
 
+OSISINCLUDE=${includedir}/osis
+
 dnl Specify which variables that should be exchanged
 AC_SUBST(PACKAGE)
 AC_SUBST(VERSION)
+AC_SUBST(OSISINCLUDE)
+AC_SUBST(LT_VERSION_INFO)
 
 AC_OUTPUT(Makefile \
 	tools/Makefile \
 	include/Makefile \
-	src/Makefile src/lib/Makefile \
-	src/lib/bios/Makefile src/lib/gemdos/Makefile \
-	src/lib/hwreg/Makefile src/lib/mint/Makefile \
-	src/lib/xbios/Makefile src/lib/xgemdos/Makefile \
-	doc/Makefile
+	src/Makefile \
+        src/lib/Makefile \
+	doc/Makefile \
+        otosis-config \
+        otosis.m4
 )
