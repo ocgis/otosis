@@ -24,6 +24,7 @@
 #define BINDPROTO_H
 
 #include <stdio.h>
+#include "config.h"
 
 #define so(t) sizeof(t)
 
