@@ -29,8 +29,8 @@ void init_memory( void )
     *p++ = 0x0010;
     *p++ = 0x1000;
     *p++ = 0x2c79; /* move.l $100FFE,a6 */
-    *p++ = 0x0010;
     *p++ = 0x0ffe;
+    *p++ = 0x1000;
     *p++ = 0x4e41; /* trap #1 */
   }
 }
