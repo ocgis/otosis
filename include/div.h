@@ -5,6 +5,7 @@
  *  Copyright 1996 Elias Martenson <elias@omicron.se>
  *  Copyright 1996 Roman Hodek <Roman.Hodek@informatik.uni-erlangen.de>
  *  Copyright 1998 Tomas Berndtsson <tomas@nocrew.org>
+ *  Copyright 1998 Christer Gustavsson <cg@nocrew.org>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -178,6 +179,13 @@ typedef struct {
   int mode;			/* mode, 0 = long filenames, 1 = TOS */
 } DopendirDirContext;
 
+typedef struct {
+  long  msg1;			/* User message */
+  long  msg2;			/* User message */
+  short pid;			/* pid of reader or writer */
+} PMSG;
+
+
 /*
  *  Program flags
  */
@@ -275,6 +283,25 @@ typedef struct {
 
 #define TOS_SHMGETBLK		0x4D00
 #define TOS_SHMSETBLK		0x4D01
+
+/*
+ *  MiNT Pmsg commands
+ */
+
+#define TOS_PMSG_READ		0x0000
+#define TOS_PMSG_WRITE		0x0001
+#define TOS_PMSG_WRITEREAD	0x0002
+#define TOS_PMSG_NONBLOCKING	0x8000
+
+/*
+ *  MiNT Psemaphore commands
+ */
+
+#define TOS_SEM_CREATE		0
+#define TOS_SEM_DESTROY		1
+#define TOS_SEM_LOCK		2
+#define TOS_SEM_UNLOCK		3
+
 
 
 /*
