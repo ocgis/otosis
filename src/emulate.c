@@ -160,6 +160,13 @@ my_handle_exception(int     nr,
 
 static
 void
+my_handle_event(unsigned long count)
+{
+}
+
+
+static
+void
 fill_template(CPU * cpu)
 {
   cpu->get_byte = my_get_byte;
@@ -171,7 +178,9 @@ fill_template(CPU * cpu)
   cpu->real_addr = my_real_addr;
   cpu->valid_addr = my_valid_addr;
   cpu->handle_exception = my_handle_exception;
+  cpu->handle_event = my_handle_event;
 }
+
 
 void
 emulate(TosProgram * prog)
