@@ -90,7 +90,7 @@ XBIOSFUNC(Supexec)
    *
    */
   /* FIXME */
-  #if 0
+  #ifdef mc68000
   __asm__ __volatile__ ( "moveml %/d3-%/d7/%/a3-%/a6,%/sp@-	\n\t"
 			 "jsr %1@ ; movel %/d0,%0		\n\t"
 			 "moveml %/sp@+,%/d3-%/d7/%/a3-%/a6" :

@@ -28,6 +28,7 @@
 
 #include "div.h"
 #include "prototypes.h"
+#include "init.h"
 
 
 #ifdef DEBUG_STACK

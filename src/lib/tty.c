@@ -35,11 +35,7 @@
 /* sys/user.h needed for PAGE_SIZE */
 #include <sys/user.h>
 #include <linux/unistd.h>
-
-/*
-** FIXME
-#include <termbits.h>
-*/
+#include <termios.h>
 
 #include "div.h"
 #include "version.h"

@@ -26,9 +26,10 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <asm/ptrace.h>
-/* FIXME only m68k
+/* FIXME only m68k */
+#ifdef mc68000
 #include <asm/traps.h>
-*/
+#endif
 
 #include "traps.h"
 #include "div.h"
@@ -41,7 +42,7 @@ extern volatile int in_emu;
 void sigsegv_handler( int sig, int vecnum, struct sigcontext *scp )
 {
   /* FIXME only m68k */
-#if 0
+#ifdef mc68000
   unsigned long ea, pc, ssw, value;
   int read, size;
   int format = (scp->sc_formatvec >> 12) & 0xf;
