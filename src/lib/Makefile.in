@@ -103,7 +103,7 @@ xbios_sources =  	xbios_dispatch.c xbios_hw.c xbiosbind.c
 xgemdos_sources =  	xgemdos.c xgemdos_dispatch.c xgemdosbind.c
 
 
-common_sources =  	file_emu.c init.c init.h malloc.c optfile.c optiondef.c scancode_us.c 	tty.c
+common_sources =  	div.c file_emu.c init.c init.h malloc.c optfile.c optiondef.c scancode_us.c 	tty.c
 
 
 BUILT_SOURCES = optiondef.c scancode_us.c
@@ -130,8 +130,9 @@ libotosis_la_OBJECTS =  bios_chardev.lo bios_dispatch.lo bios_misc.lo \
 bios_vt52.lo biosbind.lo gemdos_chardev.lo gemdos_dispatch.lo \
 gemdos_file.lo gemdos_mem.lo gemdos_proc.lo gemdosbind.lo \
 hwreg_dispatch.lo mint_dispatch.lo mint_file.lo mint_proc.lo \
-mintbind.lo xbios_dispatch.lo xbios_hw.lo xbiosbind.lo file_emu.lo \
-init.lo malloc.lo optfile.lo optiondef.lo scancode_us.lo tty.lo
+mintbind.lo xbios_dispatch.lo xbios_hw.lo xbiosbind.lo div.lo \
+file_emu.lo init.lo malloc.lo optfile.lo optiondef.lo scancode_us.lo \
+tty.lo
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
@@ -146,10 +147,10 @@ DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 TAR = tar
 GZIP_ENV = --best
 DEP_FILES =  .deps/bios_chardev.P .deps/bios_dispatch.P \
-.deps/bios_misc.P .deps/bios_vt52.P .deps/biosbind.P .deps/file_emu.P \
-.deps/gemdos_chardev.P .deps/gemdos_dispatch.P .deps/gemdos_file.P \
-.deps/gemdos_mem.P .deps/gemdos_proc.P .deps/gemdosbind.P \
-.deps/hwreg_dispatch.P .deps/init.P .deps/malloc.P \
+.deps/bios_misc.P .deps/bios_vt52.P .deps/biosbind.P .deps/div.P \
+.deps/file_emu.P .deps/gemdos_chardev.P .deps/gemdos_dispatch.P \
+.deps/gemdos_file.P .deps/gemdos_mem.P .deps/gemdos_proc.P \
+.deps/gemdosbind.P .deps/hwreg_dispatch.P .deps/init.P .deps/malloc.P \
 .deps/mint_dispatch.P .deps/mint_file.P .deps/mint_proc.P \
 .deps/mintbind.P .deps/optfile.P .deps/optiondef.P .deps/scancode_us.P \
 .deps/tty.P .deps/xbios_dispatch.P .deps/xbios_hw.P .deps/xbiosbind.P
