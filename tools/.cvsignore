@@ -2,3 +2,4 @@ Makefile
 .deps
 .libs
 make_scancode
+Makefile.in

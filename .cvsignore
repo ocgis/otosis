@@ -7,3 +7,6 @@ Makefile
 libtool
 otosis-config
 otosis.m4
+aclocal.m4
+Makefile.in
+configure
