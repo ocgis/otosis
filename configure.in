@@ -100,13 +100,16 @@ else
   OTOSIS_LIBS=$otosis_dir/libotosis.la
 fi
 
+AC_ARG_ENABLE(gem, [  --disable-gem           Do not use GEM],
+                    ,
+[
 if test x$with_oaesis = x ; then
   # Look for separately installed oaesis
 
   AM_PATH_OAESIS(0.91.0,,
-    AC_MSG_ERROR([
-*** oaesis 0.91.0 or better is required. The latest version of oaesis
-*** is always available from ftp://ftp.nocrew.org.]),
+    AC_MSG_WARN([
+*** oaesis 0.91.0 or better is required for GEM emulation. The latest version 
+*** of oaesis is always available from ftp://ftp.nocrew.org.]),
     liboaesis)
 
   oaesis_cflags=$OAESIS_CFLAGS
@@ -132,6 +135,12 @@ else
 
   OAESIS_CFLAGS="-I$oaesis_dir"
   OAESIS_LIBS=$oaesis_dir/liboaesis.la
+fi
+])
+
+if test "x$OAESIS_CFLAGS" != "x" 
+then
+  AC_DEFINE(USE_GEM)
 fi
 
 dnl This is needed for AC_CHECK_HEADERS to find the otosis 
