@@ -20,8 +20,14 @@
  *
  ************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif /* HAVE_CONFIG_H */
+
 #include <netinet/in.h>
+#ifdef USE_GEM
 #include <oaesis.h>
+#endif /* USE_GEM */
 #include <ocpuis.h>
 #include <stdio.h>
 
@@ -132,6 +138,7 @@ my_handle_exception(int     nr,
       break;
 
     case 2:
+#ifdef USE_GEM
       switch(CPUget_dreg(0) & 0xffff)
       {
       case 115: /* VDI */
@@ -143,8 +150,11 @@ my_handle_exception(int     nr,
         break;
 
       default:
-        fprintf(stderr, "Illegal Xgemdos call: 0x%x\n", CPUget_dreg(0));
+	fprintf(stderr, "Illegal Xgemdos call: 0x%x\n", CPUget_dreg(0));
       }
+#else /* USE_GEM */
+      fprintf(stderr, "Xgemdos not supported in this compile.\n");
+#endif /* USE_GEM */
       break;
 
     case 13:     /* Bios, trap #13 */
@@ -232,11 +242,13 @@ emulate(TosProgram * prog)
   CPUaddr sp;
   my_prog = prog;
 
+#ifdef USE_GEM
   /* Setup path mode for oAESis to MiNT paths */
   Oaesis_set_path_mode(OAESIS_PATH_MODE_MINT);
 
   /* Setup a callback handler for oAESis */
   Oaesis_callback_handler(handle_callback);
+#endif /* USE_GEM */
 
   /* Setup a pointer to basepage and clear one long */
   sp = ntohl((CPUaddr)prog->basepage->hitpa);
