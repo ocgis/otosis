@@ -119,31 +119,32 @@ int main( int argc, char **argv )
    *  Set up the ARGV commandline
    */
   if( prog->basepage->env == NULL ) {
-	prog->basepage->env = mymalloc( 2 );
+	prog->basepage->env = htonl(mymalloc(2));
 	w = 0;
 	env_len = 2;
   }
-  else {
-	for( w = 0 ; prog->basepage->env[ w ] ||
-		         prog->basepage->env[ w + 1 ] ; w++ );
+  else
+  {
+    char * myenv = ntohl(prog->basepage->env);
+
+	for(w = 0 ; myenv[w] || myenv[w + 1] ; w++ );
 	w++;
 	env_len = w + 2;
   }
   env_len += 6 + strlen( TosPrgName ) + 2;
-  prog->basepage->env = myrealloc( prog->basepage->env, env_len );
-  strcpy( prog->basepage->env + w, "ARGV=" );
+  prog->basepage->env = htonl(myrealloc(ntohl(prog->basepage->env), env_len));
+  strcpy(ntohl(prog->basepage->env) + w, "ARGV=" );
   w += 6;
-  strcpy( prog->basepage->env + w, TosPrgName );
+  strcpy(ntohl(prog->basepage->env) + w, TosPrgName );
   w += strlen( TosPrgName ) + 1;
   for( i = prgarg + 1 ; i < argc ; ++i ) {
 	env_len += strlen( argv[ i ] ) + 1;
-	prog->basepage->env = myrealloc( prog->basepage->env, env_len );
-	strcpy( prog->basepage->env + w, argv[ i ] );
+	prog->basepage->env =
+      htonl(myrealloc(ntohl(prog->basepage->env), env_len));
+	strcpy(ntohl(prog->basepage->env) + w, argv[i]);
 	w += strlen( argv[ i ] ) + 1;
   }
-  prog->basepage->env[ w ] = 0;
-	
-
+  ((char *)ntohl(prog->basepage->env))[w] = 0;
 
   /* make std channels unbuffered */
   setvbuf( stdin, NULL, _IONBF, 0 );

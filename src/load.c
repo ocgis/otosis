@@ -155,7 +155,7 @@ TosProgram *load_tos_program( char *filename )
   bp->bbase = htonl(BSS_SEGMENT(hdr,prg));
   bp->blen = hdr->bsize;
   bp->parent = (Ptr32)NULL;
-  bp->env = env;
+  bp->env = htonl(env);
   bp->cmdlin[ 0 ] = 0;
 
   /*  patch_program( hdr ); */
@@ -201,7 +201,6 @@ static int relocate_program( TosBasepage *bp, TosExecHeader *hdr, FILE *fp )
 
   if(hdr->absflag)  return 0;
   reloc = ntohl((ulong)bp->tbase);
-  
   /* seek to reloc table and read first offset */
   fseek( fp, (ulong)FIXUP_OFFSET(hdr), SEEK_SET );
   if (fread( &offset, sizeof(ulong), 1, fp ) != 1)
