@@ -1,0 +1,79 @@
+			    oTOSis - V0.22
+		 By Elias Martenson, elias@omicron.se
+				   
+
+This is a new version of the TOS emulator for Linux/68K.
+
+The name has been changed. Or rather, it didn't have a name before and
+now it's got the name oTOSis.
+
+Some MiNT support is implemented. It's enabled using the -m flag.
+
+Hardware register support has been started on.
+
+
+		     WHAT WORKS IN THIS VERSION?
+
+Some programs run, most notably Pure C.
+
+The compiler (pcc.ttp) runs. plink.ttp used to run but don't anmore.
+See the problem decription later in this document.
+
+
+		     HOW DOES THIS EMULATOR WORK?
+
+Since I know very little about how emulation of other operating
+systems should be made on the kernel level, I decided to attempt to
+make a TOS-emulator that requires no kernel hacking, and that can be
+run as a user process. The result is what you see here.
+
+When a user process attempts to perform an illegal trap, that is, any
+trap except for trap #0, it generates a SIGILL. The emulator traps
+SIGILL, and the signal handler looks in the stack frame to see what
+instruction caused the signal. If the instruction is "trap" then the
+vector number is checked and the appropriate function is called. Then,
+after the call has been performed, the return value is written onto
+the stack so that the signal handler restores this number into d0
+instead of the old value that was saved before the call to the signal
+handler. These hacks with the stack is propably quite unportable, and
+I suppose that the offsets used might not work in newer versions of
+the kernel.
+
+The loader loads a TOS-program, relocates it, and sets up a basepage.
+It then sets up the signal handler and jumps to the TOS-programs start
+address.
+
+
+			   CURRENT PROBLEMS
+
+When running teh emulator as ELF, malloc()'ed memory is in the
+upper half of the address space. This causes some TOS programs
+to think that Malloc returned an error, and thinks that there
+is not enough memory left. The Pure C linker is a good example
+for this.
+
+
+			   WHAT IS PLANNED?
+
+Then some kind of configuration options would be nice, a lot of values
+are hard coded right now, and all TOS drives are actually pointing to
+the root directory on the Linux filesystem. It would be nice to be
+able to map a specific TOS-drive on a directory.
+
+The plan is to integrate oTOSis with the AES called oAESis that has
+already been written and runs under MiNT. For this we need oVDIsis
+that Stefan Berndtsson (gubsb@trivux.ub.gu.se) is working on. When
+this is finished it should be possible to run GEM programs under
+Linux. The name of this joint project is OSIS.
+
+
+			     CONTACT INFO
+
+Please, contact me about this application. I really would like to
+receieve help, hints, patches, new implementations of TOS-calls,
+etc...
+
+
+
+Elias Martenson
+elias@omicron.se

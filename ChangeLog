@@ -1,0 +1,243 @@
+Sat Oct  5 01:34:45 1996  Superuser  (root@outpost)
+
+	* Implemented scancode emulation
+
+Wed Oct  2 17:43:40 1996  Superuser  (root@outpost)
+
+	* bios/chardev.c: Added an option: vt52,that specifies
+	weither to use vt52 emulation.
+
+Mon Sep 30 01:24:37 1996  Elias Martenson  (elias@omicron.se)
+
+	* Fixed sone Fcntl options
+
+	* Implemented drive mapping
+
+Sun Sep 29 19:21:31 1996  Elias Martenson  (elias@omicron.se)
+
+	* load.c (load_tos_program): Added support for specifying
+	escapes in the environment option.
+
+	* tos.c: New option: current_drive that specifies the drive
+	that should be the default drive when starting.
+
+Sat Sep 28 23:09:20 1996  Elias Martenson  (elias@omicron.se)
+
+	* gemdos/file.c mint/file.c: changed all calls to
+	tos_to_unix to check the return value. If it is
+	not 0 then it is a TOS error code to return.
+
+Mon Sep 16 11:19:40 1996  Roman Hodek  <rnhodek@faui21j.informatik.uni-erlangen.de>
+
+	* Makefile: added TAGS and diff targets
+
+Sun Sep 15 18:22:50 1996  Roman Hodek  <rnhodek@emilio.informatik.uni-erlangen.de>
+
+	* tos.c (main): make std{in,out,err} unbuffered to avoid output
+	mangling
+
+	* options.awk: Don't complain if letter '-' is used for multiple
+	options (used for "no shurtcut letter at all").
+
+	* bios/chardev.c: written emulation for all BIOS devices now
+	
+	* vt52.c: moved into bios/ dir, integrated
+
+Fri Sep 13 14:28:49 1996  Roman Hodek  <rnhodek@faui21j.informatik.uni-erlangen.de>
+
+	* bios/routs.c: split into two files, chardev.c (Bcon* functions)
+	and misc.c (the rest)
+
+Fri Sep 13 00:58:28 1996  Roman Hodek  <rnhodek@emilio.informatik.uni-erlangen.de>
+
+	* strace.c: new file, code for doing system call tracing. Contains
+ 	some special hacks for pretty printing errno's, date/time,
+ 	structures and the like; see and enjoy :-) tos_vfprintf() has been
+	moved to here.
+
+	* */dispatch_*.c: added xxx_call_args and xxx_call_retv arrays
+	with format specifications for arguments and return values of
+	system calls.
+
+	* options.def: new option "aux_stderr", for GNU programs that
+	assume handle 2 to be stderr...
+
+	* file_emu.c (translate_error): add translation for ESPIPE (for
+	Fseek)
+
+Wed Sep 11 11:36:38 1996  Roman Hodek  <rnhodek@faui21j.informatik.uni-erlangen.de>
+
+	* tos.c (sig_toggle_trace): Make SIGUSR1 toggle program's trace
+	flag
+
+	* version.c: new file, contains only print_version() to make tos.c
+	independent of compile.h and avoid recompiling tos.c each time you
+	run make
+
+	* gemdos/proc.c (Pexec): arguments of waitpid were swapped
+
+	* gemdos/{file,mem,proc}.c: avoid "unused variable" warnings
+
+	* Makefile: make sure include/{compile,optiondef}.h are available
+	when making `depend'
+
+Tue Sep 10 15:15:28 1996  Roman Hodek  <rnhodek@faui21j.informatik.uni-erlangen.de>
+
+	* gemdos/proc.c (Pexec): Use /proc/self/exe for cloning emulator
+	process, instead of hardcoded path :-) Command line processing
+	still missing!
+
+	* *.[ch]: added copyright headers everywhere, and a Emacs local
+	variables section at the end (to set correct tab-width)
+	
+	* xbios/hw.c (Supexec): list all registers not saved across
+	function calls in the clobbered section of the asm
+
+	* gemdos/file.c: replaced Elias' "static"s by SIGSTACK_STATIC, to
+	easily remove them once sigstacks are commonly in use
+	
+Sat Aug 17 17:46:12 1996  Elias Martenson  (elias@omicron.se)
+
+	* trace.c: Added trace function
+
+Sat Jul 20 04:46:20 1996  Elias Martenson  (elias@omicron.se)
+
+	* load.c (load_tos_program): Implemented a new option -e, to
+	support setting of the environment from the commandline.
+
+Sun Jul 14 22:35:04 1996  Elias Martenson  (elias@omicron.se)
+
+	* tos.c (setup_sysvars): Fixed the MiNT cookie value.
+
+Mon Jul 15 10:18:59 1996  Roman Hodek  <rnhodek@emilio.informatik.uni-erlangen.de>
+
+	* gemdos/file.c (Fattrib): revised Fattrib code
+
+	* bios/routs.c: make Bco* function also callable by internal
+	GEMDOS (i.e., normal arguments)
+
+	* gemdos/*: finished handle mapping for I/O redirection,
+	implemented Fforce and Fdup
+
+Fri Jul 12 11:26:46 1996  Roman Hodek  <Roman.Hodek@informatik.uni-erlangen.de>
+
+	* doc/OSis.texi: Started documentation
+
+	* Makefile, doc/Makefile: Added doc subdir in main Makefile,
+	created Makefile for doc
+
+Thu Jul 11 23:34:34 1996  Elias Martenson  (elias@omicron.se)
+
+	* gemdos/file.c: Changed some string definitions to be static.
+	This is not necessary when sigstacks are implemented fully.
+
+	* tos.c: If you are compiling on 1.3 you need to include
+	sys/user.h
+
+Thu Jul 11 09:39:03 1996  Roman Hodek  <rnhodek@emilio.informatik.uni-erlangen.de>
+
+	* tos.c (setup_sig_handlers): Added support for signal stacks to avoid
+	TOS stack overruns
+
+Tue Jul  9 21:32:49 1996  Elias Martenson  (elias@omicron.se)
+
+	* xbios/hw.c (xbios_Supexec): Added register to the definition of
+	return value variable rv.
+
+	* Makefile, file_emu.c: Moved the file from the gemdos
+	subdirectory. Also removed -f flag from hostname. It gives an
+	error message on my machine.
+
+Tue Jul  9 09:11:30 1996  Roman Hodek  <rnhodek@emilio.informatik.uni-erlangen.de>
+
+	* gemdos/dispatch_gemdos.c (init_gemdos), gemdos/file.c (getfd,
+ 	new_handle), gemdos/fd.h: New function for initializing GEMDOS
+ 	internal variables; started GEMDOS -> Unix file handle mapping
+ 	(via FdMap array) for handling I/O redirections
+
+	* gemdos/dispatch_gemdos.c (dispatch_gemdos): started new
+	mechanism for also printing args of GEMDOS calls; doesn't work
+	correctly yet :-(
+
+	* tos.c (print_usage): Also print who compiled it when with which gcc
+
+Mon Jul  8 16:36:06 1996  Roman Hodek  <Roman.Hodek@informatik.uni-erlangen.de>
+
+	* include/div.h (OTOSIS_VERSION_MINOR): New numeric version number
+	macros for OTOS cookie value
+
+	* tos.c (sigill_handler): Added special hack for the MOVE SR,..
+	that is priviledged since the '010, but used by some older TOS
+	programs (e.g. TurboC library). The opcode is changed to MOVE
+	CCR,.. and the insn is retried.
+
+	* include/traps.h: Added defines for exception vector numbers
+
+	* tos.c: Renamed old_flags in tos.c to old_termios (more
+	suggestive :-)
+	New function rexit() that does restore_tty(). Finally bored about
+	forgetting the 10th restore_tty()...
+	
+	* */dispatch_*.c: cleaned up a bit, treat invalid syscalls >=
+	maxnum and < maxnum equally
+	
+	* *-call: deleted, unnecessary
+	
+	* include/traps.h: deleted unnecessary structure around union
+
+	* xbios/hw.c (Supexec): Need to clear 'in_emu' around prg function
+
+	* tos_test.S: deleted, not needed anymore
+	
+	* overall: changed TOSFUNC to BIOSFUNC, XBIOSFUNC, ... and changed
+	function name prefixes from tos_ to bios_, xbios_, ...
+	
+	* gemdos/load.c (load_tos_program): some fclose()s missing
+	deleted patch_program()
+
+	* gemdos/mem.c (Malloc): Malloc(-1) return value user-configurable
+
+	* gemdos/file.c: added comment for Fsetdta() return value
+	fixed 'length' typo
+
+	* optfile.c: new option parsing mechanism, with unified structure
+	for both, config files and command line arguments; rewritten
+	references to global option variables to new names ("Opt_*")
+	fixed FIXUP_OFFSET, doesn't depend on base addr, so shouldn't get
+	it as argument
+
+	* include/div.h: *_UNIMP macros add prefix automatically
+
+	* Makefile: Compile time option DEBUG with alternative sets of
+	CFLAGS
+	rewritten for subdir-structure
+	test for ELF format and then use own linker script
+	some cleanups and comments
+	
+	* overall: distributed files across new subdirectories
+
+V0.22:
+
+Sun Jul  7 14:04:19 1996 Elias Martenson <elias@omicron.se>
+
+	* tos.c, traps.c: asm/sigcontext.h needs to be included if
+ 	compiling on a 1.3 kernel.
+
+	* div.c: The file is not needed anymore. It was only used by the
+ 	PureC code patcher.
+
+	* file_emu.c: Changed the filename patcher so that programs
+ 	running in the MiNT domain gets long filenames.
+
+	* mint_file.c: Converted TOSFUNC macros. Implementations of the
+ 	following TOS calls: Dopendir, Dreaddir, Drewinddir, Dclosedir,
+ 	Dpathconf
+
+	* tos.c, gemdos_proc.c, xbios_hw.c: The supervisor emulation flag
+ 	should be in the prog struct
+
+	* load.c: Changed an argument FIXUP_OFFSET so that
+ 	relocate_program works
+
+	* mint_file.c: Fixed a typo that caused the link name to be taken
+ 	from the wrong buffer

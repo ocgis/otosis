@@ -1,0 +1,695 @@
+\input texinfo		@c -*- texinfo -*-
+@c %**start of header
+@setfilename osis.info
+@settitle OSis
+@iftex
+@afourpaper
+@end iftex
+@c %**end of header
+
+@set edition 0.1
+@set update-date 12 July 1996
+@set update-month July 1996
+@set oTOSis-version 0.23
+@set oVDIis-version 0.0
+@set oAESis-version 0.76
+
+@ifinfo
+This file documents OSis, the TOS emulator for Linux/68k.
+
+This documentation is still under construction and some parts are
+missing. Also, since OSis currently develops very quickly, the
+documentation will not always be really up-to-date. Be patient!
+
+Copyright (C) 1996 Roman Hodek
+
+Permission is granted to make and distribute verbatim copies of
+this manual provided the copyright notice and this permission notice
+are preserved on all copies.
+
+@ignore
+Permission is granted to process this file through TeX and print the
+results, provided the printed document carries copying permission
+notice identical to this one except for the removal of this paragraph
+(this paragraph not being relevant to the printed manual).
+@end ignore
+
+Permission is granted to copy and distribute modified versions of this
+manual under the conditions for verbatim copying, provided that the entire
+resulting derived work is distributed under the terms of a permission
+notice identical to this one.
+
+Permission is granted to copy and distribute translations of this manual
+into another language, under the above conditions for modified versions,
+except that this permission notice may be stated in a translation approved
+by the Free Software Foundation.
+@end ifinfo
+
+@titlepage
+@title OSis
+@subtitle The TOS emulator for Linux/68k
+@subtitle Edition @value{edition}, for oTOSis @value{oTOSis-version}
+@subtitle @value{update-month}
+
+@author by Roman Hodek
+
+@page
+@vskip 0pt plus 1filll
+Copyright @copyright{} 1996 Roman Hodek
+
+@sp 2
+This is a preliminary edition of the OSis documentation, consistent with
+version @value{oTOSis-version} of oTOSis.
+@sp 2
+
+Permission is granted to make and distribute verbatim copies of
+this manual provided the copyright notice and this permission notice
+are preserved on all copies.
+
+Permission is granted to copy and distribute modified versions of this
+manual under the conditions for verbatim copying, provided that the entire
+resulting derived work is distributed under the terms of a permission
+notice identical to this one.
+
+Permission is granted to copy and distribute translations of this manual
+into another language, under the above conditions for modified versions,
+except that this permission notice may be stated in a translation approved
+by the Free Software Foundation.
+@sp 2
+Cover art by Etienne Suvasa.
+@end titlepage
+
+
+@c ======================================================================
+
+
+@ifinfo
+@node Top, Overview, (dir), (dir)
+@top OSis
+
+OSis is a TOS emulator for Linux/68k. It consists of the main parts
+oTOSis, oVDIis and oAESis, each responsible for emulating the respective
+major parts of TOS.
+
+Currently, oTOSis can run not too complex or badly programmed
+@file{.TOS}/@file{.TTP} executables. oAESis is developed under the
+native TOS/MiNT environment as replacement for MultiTOS' AES and will be
+integrated into the OSis project later. oVDIis will come later.
+
+@menu
+* Overview::                    Summary of what OSis does.
+* History::                     Some words about the evolution of OSis.
+* General Usage::               How to use OSis in the every-day case.
+* Configuration and Invocation::  Command line arguments and
+                                  configuration files of OSis
+* Technical Details::           How OSis works internally.
+
+* Option Index::                
+* Concept Index::               
+
+ --- The Detailed Node Listing ---
+
+Configuration and Command Line Options
+
+* Option Basics::               General syntax of options.
+* Configuration File Syntax::   Syntax of OSis' configuration files.
+* Command Line::                Now the command line looks like and how
+                                arguments are treated.
+* Option Setting Precedence::   Which settings come in effect?
+* Program Specific Settings::   How to set different values for
+                                different TOS programs in config files.
+* Options::                     Detailed list of all OSis options.
+
+Available Options
+
+* Debugging and Emulation Type::  
+* Path Settings::               
+* Memory Layout::               
+
+Technical Details
+
+* TOS System Calls::            How TOS system calls are catched and
+                                emulated.
+* Hardware Registers::          How access to hardware I/O registers is
+                                emulated.
+* I/O Redirection::             Relations of I/O redirection under Unix and
+                                GEMDOS.
+@end menu
+
+@end ifinfo
+
+
+
+@c ======================================================================
+
+@node     Overview, History, Top, Top
+@comment  node-name,  next,  previous,  up
+@chapter Overview of OSis
+
+OSis is a TOS emulator for Linux/68k. It is intended to (once) run every
+cleanly written GEM or TOS program under Linux. The OSis project
+consists of three main parts: oTOSis, the GEMDOS/MiNT/BIOS/XBIOS
+emulation, which provides basic operation system services to TOS
+applications. Next oVDIis, that implements VDI drawing functions under
+X, and last oAESis as AES/MultiTOS replacement.
+
+Current state of the art is that oTOSis @value{oTOSis-version} can run
+many @file{.TOS}/@file{.TTP} (i.e., non-GUI) programs, but is still
+under heavy and fast development. oVDIis is still vapour, but a first
+public version may be released soon. oAESis is currently developed under
+the native TOS/MiNT enviroment and has reached version
+@value{oAESis-version}. It is already able to run several GEM
+applications. But for integration into OSis under Linux, still several
+adaptions will be needed.
+
+The emulator executable under Linux is simply called @code{tos}. It
+takes the TOS program to execute as argument and determines itself
+whether it is a console program (@file{.TOS} or @file{.TTP}) or a GEM
+application (@file{.PRG} or @file{.APP}). Obviously, GEM programs need X
+running, while console-oriented ones do not. The latter can also work in
+normal Unix pipelines, since OSis gets the I/O redirections right for
+this.
+
+
+@c ======================================================================
+
+@node  History, General Usage, Overview, Top
+@comment  node-name,  next,  previous,  up
+@chapter History
+
+The idea of writing a TOS emulator dates back to the oldest times of
+Linux/68k on Atari, inspired by the existance of dosemu on Linux/i386.
+First thoughts about how it could be implemented were made in the German
+MausNet newsgroup @samp{LINUX-68K}, mainly by Martin Schaller
+(@code{<Martin_Schaller@@r.maus.de>}) and Roman Hodek
+(@code{<Roman.Hodek@@informatik.uni-erlangen.de>}). It was quickly agreed
+on that the @code{tosemu} (the suggestive preliminary name for the kid)
+should require as little kernel support as possible, and thus using
+signals for emulation (@pxref{Technical Details}) is the best way to
+go.
+
+Shortly after that discussion, Martin Schaller started coding, and after
+a few days (!), he had a first prototype ready. It could already run
+simple TOS programs. But then, all of Martin's sources were shreddered
+by an accident: He wanted to take a book from the shelf, and on the way
+he hit a bottle of coke and poured it over his brand-new 1GB disk lying
+around on the desk. A screaming noise indicated the consequences@dots{}
+Yes, Martin is a careful man and makes backups every few days, but the
+@code{tosemu} was too new, unfortunately. So all his work was gone
+forever. That's life@dots{}
+
+In the time following, there were many more important projects, so noone
+of the Linux developers had time again to start again working on the
+@code{tosemu}. Finally, Martin disappeared silently from the Linux scene
+and took all his experiences with him. After maybe a year, the next try
+was started by Roman Hodek. But he was a perfectionist, and attempted to
+write an incredible ingenious configuration mechanism (with structured
+and arrayed variables, @code{yacc} grammar, and other funny features).
+So ingenious that ---some days later--- he himself didn't understand it
+anymore@dots{} Again, there were other important things to do, so the
+sources were lying around and didn't even compile.
+
+Next one was Elias Martenson. He started from scratch and really managed
+it to get it run (and to keep the sources :-). After some version steps
+(0.17 as far as I can remember), he released his work to the public.
+Also Roman supplied his old sources, for ideas how to make some
+low-level things. But that @code{tosemu} version used some hard-coded
+offsets and ran only uder Linux version 0.9. That one was dropped in
+favour of 1.2 soon thereafter, and @code{tosemu} didn't work anymore.
+Roman promised to fix that, but again had more important things to do.
+(Hasn't that been the case once before?) Also Elias was busy with his
+job and had little time for @code{tosemu}, so the project was sleeping
+again.
+
+Finally, in June '96, Elias came up with a new version (0.21). At that
+time, Roman had just given up his job as Linux/68k coordinator, and thus
+incidentally had some spare time for oTOSis (that's the name Elias has
+christened @code{tosemu} in the meantime). Both of them are currently
+developing oTOSis and adding feature after feature.
+
+Elias also managed to persuade some friends to join the project. 
+Stefan Berndtsson volunteered for oVDIis, and Christer Gustavsson for
+oAESis.
+
+
+
+@c ======================================================================
+
+@node  General Usage, Configuration and Invocation, History, Top
+@comment  node-name,  next,  previous,  up
+@chapter General Usage
+
+Not yet started@dots{}
+
+
+@c ======================================================================
+
+@node  Configuration and Invocation, Technical Details, General Usage, Top
+@comment  node-name,  next,  previous,  up
+@chapter Configuration and Command Line Options
+
+OSis implements a unified mechanism for configuration files and command
+line options. This makes it easier for you to remember option names and
+the like. In general, every setting that can be made in a config file
+can also be made on the command line, and vice versa.
+
+In the following, the term @dfn{option} will be used for what you know
+either as command line arguments or configuration file variables. Both
+things are effectively the same for OSis, and option will be used as the
+general term. On the other hand, @dfn{argument} always will refer to
+something written on the command line, and @dfn{variable} to something
+in a configuration file.
+
+@menu
+* Option Basics::               General syntax of options.
+* Configuration File Syntax::   Syntax of OSis' configuration files.
+* Command Line::                Now the command line looks like and how
+                                arguments are treated.
+* Option Setting Precedence::   Which settings come in effect?
+* Program Specific Settings::   How to set different values for
+                                different TOS programs in config files.
+* Options::                     Detailed list of all OSis options.
+@end menu
+
+
+@c ----------------------------------------------------------------------
+
+@node Option Basics, Configuration File Syntax, Configuration and Invocation, Configuration and Invocation
+@comment  node-name,  next,  previous,  up
+@section Option Basics
+
+Every option has a name, consisting of a sequence of letters and digits,
+and a value. Possible values depend on the type of the option. The type
+is one of boolean, integer, or string. Many option also have an
+associated shortcut letter that may be used to set their value on the
+command line (@pxref{Command Line,,Command Line Parsing}).
+
+A string can be any sequence of characters. An integer is written as you
+would except it, i.e. as a series of digits, maybe with a leading
+@samp{-} for negative numbers, and maybe with @samp{0} or @samp{0x}
+prefixes for octal or hexadecimal, resp. To be exact: A valid integer is
+everything the C function @code{atol()} can parse.
+
+Finally, valid boolean values for @sc{true} are @samp{yes}, @samp{y},
+@samp{on}, @samp{1}, and analogous @samp{no}, @samp{n}, @samp{off}, and
+@samp{0} for @sc{false}. All words used for boolean values are
+case-insensitive. That means, you could write @samp{YeS}, if you like.
+
+
+@c ----------------------------------------------------------------------
+
+@node  Configuration File Syntax, Command Line, Option Basics, Configuration and Invocation
+@comment  node-name,  next,  previous,  up
+@section Configuration File Syntax
+
+OSis queries two configuration files for option settings: A system-wide
+file @file{/etc/tos/conf}, and a user-specific file @file{~/.tos}. Both
+files have exactly the same syntax and the same semantics. The latter is
+indented for giving users the chance to overwrite system-wide settings.
+@xref{Option Setting Precedence,,Precendence of Option Settings}, for
+more information on priorities.
+
+For the main part, a configuration file consists of variable settings of
+the general form
+@example
+@var{option-name} = @var{value}
+@end example
+Lines starting with a @samp{#} (after whitespace) are treated as
+comments and are completely ignored, as are any empty lines.
+
+What is possible for @var{value} depends on the option type: boolean,
+integer or string. @xref{Option Basics}, for information on valid values
+for these types.
+
+Another type of line in a config file is the header of a program
+specific section (@pxref{Program Specific Settings}), with the form:
+@example
+@var{program-name}:
+@end example
+Any number of whitespace is accepted between the @var{program-name} and
+the colon, but the @samp{:} must be the last (non-white) character on
+the line.
+
+The exact parsing mechanism is as follows:
+@enumerate
+
+@item
+Any whitespace characters (spaces, tabs, and newlines) are stripped from
+both the start and end of a line.
+
+@item
+If the line is now empty or starts with @samp{#}, it is skipped.
+
+@item
+If a colon is found at the end of the line, the line is the header of a
+program-specific section.
+
+@item
+Otherwise, the line has to be an option setting, and after the name,
+a @samp{=} is expected. Any number of whitespace is accepted around the
+@samp{=}. The rest of the line, after @samp{=} plus spaces, is the
+option value.
+
+@end enumerate
+
+Items 1 and 4 taken together also mean that you can't include whitespace
+at the start or end of any string variable, since there's no quoting
+mechanism. But you can freely write any whitespace inside such a string,
+it is included into the value without any changes.
+
+
+
+@c ----------------------------------------------------------------------
+
+@node Command Line, Option Setting Precedence, Configuration File Syntax, Configuration and Invocation
+@comment  node-name,  next,  previous,  up
+@section Command Line Parsing
+
+The command line of OSis has the general structure
+
+@example
+@code{tos} @r{[@var{OSis-options}]} @var{TOS-program} @r{[@var{program-args}]}
+@end example
+
+@strong{Every} argument in the @var{OSis-options} has to start with a
+hyphen (@samp{-}). This allows @code{tos} to find out which argument is
+@var{TOS-program}, which may not start with a @samp{-}. All arguments
+following @var{TOS-program} belong to @var{program-args} and are passed
+along to the TOS program. Alternatively, you can force the next argument
+to be @var{TOS-program} by writing @samp{--}.
+
+Following the OSis philosophy that all setting can be done equally in
+option files and on the command line, possible options are described 
+later, together with configuration variables (@pxref{Options,,Available Options}).
+
+But there are a two arguments with no config variable equivalent:
+
+@defvr {Command Line Option} -h
+Print a help message with usage syntax and brief listing of possible
+options. Example:
+@example
+tos -h
+     @print{} Usage: tos [-options] tos-program [tos-options]
+     @print{} Possible options are:
+     @print{}   -h: This help message
+     @print{}   -v: Print version information
+     @print{}   -oname=value: set arbitrary option by long name
+     @print{}   -d: debug
+     @print{}   -r<int>, -oextra_mem=<int>
+              @dots{}
+@end example
+@end defvr
+
+@defvr {Command Line Option} -v
+Print version information of OSis, e.g.:
+@example
+tos -v
+     @print{} oTOSis version @value{oTOSis-version}
+     @print{} Compiled 07/09/96 15:36:04 by rnhodek on emilio
+     @print{} with gcc version 2.7.2
+@end example
+@end defvr
+
+Arguments starting with a double hyphen (@samp{--}) are long-named
+arguments, as usual with GNU programs. Long option names can be used in
+the following ways:
+
+@example
+--@var{option-name}=@var{value}
+--@var{boolean-option}
+--no@var{boolean-option}
+@end example
+
+With @samp{--} arguments, you can set an arbitrary option by giving its
+long name. For rarely used options, the long names may be easier to
+remember than the associated shortcut letters. The @var{value} is parsed
+as usual. @xref{Option Basics}, for more information on that parsing.
+
+For options of type boolean, you can omit the @samp{=} and the
+@var{value}, which sets the option to @sc{true}. And you can
+additionally prefix the option's name with @samp{no} to set it to
+@sc{false}, as shown in the third line.
+
+
+@c ----------------------------------------------------------------------
+
+@node Option Setting Precedence, Program Specific Settings, Command Line, Configuration and Invocation
+@comment  node-name,  next,  previous,  up
+@section Precedence of Option Settings
+
+OSis knows four sources for option values, that are queried in the
+order following. That means, the later source has higher priority when
+more than one source try to set the same option value, because it is
+seen later and overwrites the previous setting.
+
+@enumerate
+
+@item
+Every option has a default value that is used only if the option isn't
+set by one of the following.
+
+@item
+The global configuration file @file{/etc/tos.conf} is used for
+system-wide settings, and written by the administrator.
+
+@item
+The user configuration file @file{~/.tos} can be used for
+user-specific option settings.
+
+@item
+Finally, command line arguments are for temporarily modifying the
+fixed settings in the configuration files.
+
+@end enumerate
+
+
+@c ----------------------------------------------------------------------
+
+@node Program Specific Settings, Options, Option Setting Precedence, Configuration and Invocation
+@comment  node-name,  next,  previous,  up
+@section Program Specific Option Settings
+
+OSis provides a mechanism for setting (or overriding) certain option
+values only for one TOS program. This is useful if, for instance,
+@file{XY.PRG} needs more memory in its TPA than usual programs. Then you
+can override the standard @code{extra_mem} value just for @file{XY.PRG}.
+
+It works as follows: In every configuration file, you can start a
+program-sepcific section with a line
+@example
+@var{program-name}:
+@end example
+After that line, all variable definitions apply to that program only.
+The section is ended by either the start of another program-specific
+section, or by the end of the file. Thus, write program-specific setting
+at the end of a config file, after any general settings.
+
+The @var{program-name} is compared case-insensitively to the filename
+part (after the last @samp{/} or @samp{\}) of the currently executed TOS
+program.
+
+
+@c ----------------------------------------------------------------------
+
+@node Options,  , Program Specific Settings, Configuration and Invocation
+@comment  node-name,  next,  previous,  up
+@section Available Options
+
+The following sections list all available options of OSis, ordered by
+functional groups.
+
+@c ......................................................................
+
+@menu
+* Debugging and Emulation Type::  
+* Path Settings::               
+* Memory Layout::               
+@end menu
+
+@node   Debugging and Emulation Type, Path Settings, Options, Options
+@comment  node-name,  next,  previous,  up
+@subsection Debugging and Emulation Type
+
+@defvr {Option (boolean)} debug (short @code{-d}, default: @sc{false})
+
+If @code{debug} is @sc{true}, OSis prints extensive debugging
+information while running. The messages include all TOS calls done by
+the program, with arguments and return value. Also some messages about
+internal state of OSis are printed.
+@end defvr
+
+@defvr {Option (boolean)} trace (short @code{-t}, default: @sc{false})
+
+If @code{trace} is @sc{true}, OSis will enter a trace monitor each time
+the TOS program executes a system call. Type @code{help} at the
+monitor's prompt to see available commands. You can also toggle this
+trace mode by sending @code{SIGUSR1} to the OSis process.
+@end defvr
+
+@defvr {Option (boolean)} MiNT (short @code{-m}, default: @sc{true})
+
+If @code{MiNT} is @sc{true}, OSis does full emulation of MiNT system
+calls and other specialities of MiNT. Since MiNT is fully compatible to
+standard GEMDOS, there are no obvious reasons to ever turn MiNT off. The
+only case where it could make some sense is if you want some program
+linked with the MiNT library not to run in the MiNT domain.
+@end defvr
+
+@defvr {Option (boolean)} aux_stderr (short @code{-a}, default: @sc{true})
+If this option is @sc{true}, GEMDOS handle 2 is not the @code{AUX:}
+device, but @code{CON:} (BIOS devices 1 or 2, resp.). Many GNU programs
+under TOS assume they can print error messages on handle 2, and
+@code{AUX:} is rarely used this way, so this option is on by default. If
+a program should expect handle 2 to be the serial port, set
+@code{aux_stderr} to @sc{false}. But note that @code{aux_stderr} being
+true does not mean you cannot use the @code{AUX:} device anymore! If a
+programs opens it explicitly by name, it works as usual. The only effect
+of @code{aux_stderr} is the initial setting of GEMDOS standard handle 2.
+@end defvr
+
+@c ......................................................................
+
+@node  Path Settings, Memory Layout, Debugging and Emulation Type, Options
+@comment  node-name,  next,  previous,  up
+@subsection Path Settings
+
+@defvr {Option (string)} path (short @code{-p}, default: @code{C:\;.})
+
+The value of this option is passed as TOS environment variable
+@code{PATH} to the TOS program. It is also used for searching for the
+executable if no path is given for it on the command line.
+@end defvr
+
+@defvr {Option (string)} drive@var{X} (short -@var{X}, default: each @code{/})
+(where @var{X} is any upper-case letter from @samp{A} to @samp{Z},
+except @samp{U})
+
+The @code{drive@var{X}} options give the Unix path associated with a
+GEMDOS drive. An access to a file @file{@var{X}:\\path\\file} by the TOS
+program is translated to @file{@var{driveX-path}/path/file}. That
+means, the configured path name of a drive is the root of the filesystem
+on that drive for GEMDOS. The value of each @code{drive@var{X}}
+therefore should be an absolute path and should point to a directory,
+that serves as the pseudo-root.
+
+GEMDOS-drive @file{U:} is treated specially, and there is @emph{no}
+option @code{driveU}. Accesses to drive @file{U:} are handled in a way
+similar to MiNT, i.e. each other drive appears as subdirectory there,
+and there are directories @file{PIPE}, @file{DEV}, @dots{} (Those special
+directories' functions aren't emulated yet.)
+
+In addition to the MiNT behaviour, @file{U:} contains every file or
+directory contained in the real Unix root directory. With this feature,  
+standard Unix filenames on the command line can be handled correctly if
+the default drive is @file{U:}.
+@end defvr
+
+@c ......................................................................
+
+@node  Memory Layout,  , Path Settings, Options
+@comment  node-name,  next,  previous,  up
+@subsection Memory Layout
+
+@defvr {Option (integer)} extra_mem (short @code{-r}, default: 8192, dimension: kByte)
+
+@code{extra_mem} defines the extra TPA space to reserve for the TOS
+program.
+
+The real GEMDOS picks the biggest free memory chunk when starting a
+program, and calls it the @dfn{TPA}. That means, the size of memory the
+program initially gets is determined by the amount of available memory.
+But under Unix, there's virtually unlimited memory, so it's not clear
+how much memory to give to the TOS program.
+
+So OSis calculates the size of the TPA as @var{code-size} +
+@var{data-size} + @var{bss-size} + @code{extra_mem}. The first three
+numbers are determined by the program header and are an minimum the
+program needs. The rest @code{extra_mem}@dmn{kByte} are usually used for
+the program's stack and maybe extra dynamically allocated storage.
+Unused parts of the TPA are normally freed after startup with
+@code{Mshrink()}. The default of 8192@dmn{kByte} should be enough in
+most cases.
+@end defvr
+
+@defvr {Option (integer)} mem_free (short @code{-f}, default: 32768, dimension: kByte)
+
+@code{mem_free} determines how many free memory OSis announces when the
+GEMDOS function @code{Malloc(-1)} is called. Since there's virtually
+unlimited memory under Unix, it's not clear how much memory should be
+reported as being free. As alternative, OSis always pretends
+@code{mem_free}@dmn{kByte} are free.
+
+This could be a problem for programs the call @code{Malloc(-1)}
+repeatedly to allocate all chunks of free memory, e.g. to determine the
+whole size of free memory, not only the biggest chunk. Since OSis always
+answers that there are @code{mem_free}@dmn{kByte} free, those programs
+will run into an endless loop. Maybe there should be a workaround for
+this in future versions.
+@end defvr
+
+
+@c ======================================================================
+
+@node  Technical Details, Option Index, Configuration and Invocation, Top
+@comment  node-name,  next,  previous,  up
+@chapter Technical Details
+
+This chapter will introduce into some implementation details of OSis. It
+is intended for the interested reader and does not attempt to be a full
+programmers' documentation. 
+
+@menu
+* TOS System Calls::            How TOS system calls are catched and
+                                emulated.
+* Hardware Registers::          How access to hardware I/O registers is
+                                emulated.
+* I/O Redirection::             Relations of I/O redirection under Unix and
+                                GEMDOS.
+@end menu
+
+
+@c ----------------------------------------------------------------------
+
+@node TOS System Calls, Hardware Registers, Technical Details, Technical Details
+@comment  node-name,  next,  previous,  up
+@section Catching TOS System Calls
+
+Need to write something here@dots{}
+
+
+@c ----------------------------------------------------------------------
+
+@node Hardware Registers, I/O Redirection, TOS System Calls, Technical Details
+@comment  node-name,  next,  previous,  up
+@section Emulation of Hardware Registers
+
+Need to write something here@dots{}
+
+
+@c ----------------------------------------------------------------------
+
+@node  I/O Redirection,  , Hardware Registers, Technical Details
+@comment  node-name,  next,  previous,  up
+@section Handling of I/O Redirection
+
+Need to write something here@dots{}
+
+
+
+
+@c ======================================================================
+
+@node  Option Index, Concept Index, Technical Details, Top
+@comment  node-name,  next,  previous,  up
+@unnumbered Option Index
+
+@printindex vr
+
+@node  Concept Index,  , Option Index, Top
+@comment  node-name,  next,  previous,  up
+@unnumbered Concept Index
+
+@printindex cp
+
+@contents
+@bye

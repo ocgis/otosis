@@ -1,0 +1,38 @@
+
+* strace feature:
+
+** still need to insert some argument/retval format strings in some
+dispatch_*.c files
+
+** maybe truncate lengths of strings (like Unix strace)
+
+** should be able to print char arrays (i.e. not null terminated) as strings
+
+* GEMDOS:
+
+** Pexec:
+
+*** implement more Pexec modes
+
+*** parse command line given in call args, and split them in such a way
+that the child emulator concatentes 'em again yielding the same result
+
+*** which emulator args should be passed to a child emulator?
+
+* BIOS:
+
+** integrate vt52 emu (linking with ncurses causes SIGBUS)
+
+** make usage of terminfo more efficient (request infos only once)
+
+** write some kind of "scancode generator", to be able to return
+ASCII+scancode to the TOS program
+
+** Maybe once emulate Rwabs() & Co. for floppy devices
+
+
+Local variables:
+mode: outline
+paragraph-separate: "[ 	]*$"
+end:
+
