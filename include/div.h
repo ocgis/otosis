@@ -31,6 +31,7 @@
 
 #include "memory.h"
 #include "option.h"
+#include "config.h"
 
 #define OTOSIS_GLOBAL_CONFIG	"/etc/tos.conf"
 #define OTOSIS_USER_CONFIG	".tos"
@@ -391,21 +392,11 @@ extern int mid_of_line;		/* declared in strace.c */
 #else /* USE_DIRECT_MOVES */
 #define GETPART(offset, shift) \
         (((UInt32)(unsigned char)_args[(offset)]) << (shift))
-
-#ifdef WORDS_BIGENDIAN
 #define TOSARG(type, name) \
         type name = (type)((_args += sizeof(type)), (sizeof(type) == 2 ? \
              (GETPART(-2,  8) | GETPART(-1,  0)) : \
              (GETPART(-4, 24) | GETPART(-3, 16) | \
               GETPART(-2,  8) | GETPART(-1,  0))))
-#else /* WORDS_BIGENDIAN */
-#define TOSARG(type, name) \
-        type name = (type)((_args += sizeof(type)), (sizeof(type) == 2 ? \
-             (GETPART(-1,  8) | GETPART(-2,  0)) : \
-             (GETPART(-1, 24) | GETPART(-2, 16) | \
-              GETPART(-3,  8) | GETPART(-4,  0))))
-#endif /* WORDS_BIGENDIAN */
-
 #endif /* USE_DIRECT_MOVES */
 
 #define XUNIMP(prefix,name)						\
