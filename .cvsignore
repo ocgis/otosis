@@ -1,0 +1,10 @@
+config.log
+config.h
+config.cache
+config.status
+stamp-h
+Makefile
+libtool
+.depend
+otosis-config
+otosis.m4
