@@ -386,7 +386,21 @@ extern int mid_of_line;		/* declared in strace.c */
 #define	XGEMDOSFUNC(name)  XFUNC(xgemdos,name)
 #define	MINTFUNC(name)     XFUNC(mint,name)
 
+#if USE_DIRECT_MOVES
 #define TOSARG(type,name) type name = *((type *)_args)++
+#else
+#if 1
+unsigned char pop_char (char ** stack_ptr);
+#define GETPART(shift) (((UInt32)pop_char(&_args)) << shift)
+#else
+/* Doesn't work for some reason */
+#define GETPART(shift) (((UInt32)(*((volatile char *)_args)++)) << shift)
+#endif
+#define TOSARG(type,name) type name = \
+                            (type)((sizeof(type) == 2) ? \
+                            (GETPART(8) | GETPART(0)) : \
+                            (GETPART(24) | GETPART(16) | GETPART(8) | GETPART(0)))
+#endif
 
 #define XUNIMP(prefix,name)						\
 	SInt32 prefix##_##name( char *args ) {				\

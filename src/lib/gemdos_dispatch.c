@@ -122,9 +122,11 @@ char *gemdos_call_retv[] = {
 
 unsigned long dispatch_gemdos( char *args )
 {
-  int callnum = *(short *)args;
+  int callnum;
   long rv;
-  
+
+  callnum = *(short *)args;
+
   /* Allocate a program structure if needed */
   if (prog == NULL) {
     prog = new_program ();

@@ -58,7 +58,7 @@ GEMDOSFUNC(Mxalloc)
   TOSARG(ulong,size);
   TOSARG(short,mode);
 #endif
-  
+
 /* For now, Mxalloc is just a copy of Malloc,
    if anybody has any ideas on how this might be
    implemented please mail me about it */
@@ -75,10 +75,13 @@ GEMDOSFUNC(Mxalloc)
 */
 GEMDOSFUNC(Malloc)
 {
+  char * arg2 = _args;
   TOSARG(ulong,size);
   ulong addr;
   int   i = 0;
 
+  fprintf(stderr, "otosis: Malloc: arg2=%p, _args=%p\n", arg2, _args);
+  
   if (size == -1) {
     return Opt_mem_free*1024;
   }
