@@ -92,33 +92,33 @@ static int get_biosdev_fd( int bdev, int i_o );
 BIOSFUNC(Bconstat)
 {
   TOSARG(short,dev);
-  return Bconstat( dev );
+  return internal_Bconstat( dev );
 }
 
 BIOSFUNC(Bconin)
 {
   TOSARG(short,dev);
-  return Bconin( dev );
+  return internal_Bconin( dev );
 }
 
 BIOSFUNC(Bconout)
 {
   TOSARG(short,dev);
   TOSARG(short,c);
-  return Bconout( dev, c );
+  return internal_Bconout( dev, c );
 }
 
 BIOSFUNC(Bcostat)
 {
   TOSARG(short,dev);
-  return Bcostat( dev );
+  return internal_Bcostat( dev );
 }
 
 /*
  * These are now the real functions...
  */
 
-long Bconstat( int dev )
+long internal_Bconstat( int dev )
 {
 	int fd;
 
@@ -130,7 +130,7 @@ long Bconstat( int dev )
 	return ioready( fd, O_RDONLY );
 }
 
-long Bcostat( int dev )
+long internal_Bcostat( int dev )
 {
 	int fd;
 
@@ -146,7 +146,7 @@ long Bcostat( int dev )
 }
 
 /* This Bconin() returns errno's, though the original usually does not... */
-long Bconin( int dev )
+long internal_Bconin( int dev )
 {
 	int fd;
 	unsigned char c;
@@ -167,7 +167,7 @@ long Bconin( int dev )
 }
 
 /* This Bconout() returns errno's, though the original is void (except PRT) */
-long Bconout( int dev, int xc )
+long internal_Bconout( int dev, int xc )
 {
 	int fd;
 	unsigned char c = xc;

@@ -40,7 +40,7 @@ long generic_cout( int fd, int c )
 {
   GETFD( fd );
   if (fd < 0)
-	  return Bconout( BIOSDEV(fd), c );
+	  return internal_Bconout( BIOSDEV(fd), c );
   else {
 	  char cc = c;
 	  write( fd, &cc, 1 );
@@ -57,10 +57,10 @@ long generic_cin( int fd, int flags )
   GETFD( fd );
 
   if (fd < 0) {
-	  c = Bconin( BIOSDEV(fd) );
+	  c = internal_Bconin( BIOSDEV(fd) );
 	  if (flags & DO_ECHO) {
 		  /* echo on same device as read from (if STDOUT is redirected...) */
-		  Bconout( BIOSDEV(fd), c );
+		  internal_Bconout( BIOSDEV(fd), c );
 	  }
 	  if (flags & DO_CTRL) {
 		  /* ^C exits program */
@@ -103,7 +103,7 @@ long generic_instat( int fd )
 {
   GETFD( fd );
   if (fd < 0)
-	  return Bconstat( BIOSDEV(fd) );
+	  return internal_Bconstat( BIOSDEV(fd) );
   else
 	  return ioready( fd, O_RDONLY );
 }
@@ -112,7 +112,7 @@ long generic_outstat( int fd )
 {
   GETFD( fd );
   if (fd < 0)
-	  return Bcostat( BIOSDEV(fd) );
+	  return internal_Bcostat( BIOSDEV(fd) );
   else
 	  return ioready( fd, O_WRONLY );
 }
@@ -173,7 +173,7 @@ GEMDOSFUNC(Cconws)
   GETFD( fd );
   if (fd < 0) {
 	  while( *str )
-		  Bconout( BIOSDEV(fd), *str++ );
+		  internal_Bconout( BIOSDEV(fd), *str++ );
 	  return 0;
   }
   else {
@@ -229,26 +229,26 @@ int gemdos_readstr( int fd, char *dest, int max )
 	fd = BIOSDEV(fd);
 	
 	for( pos = 0, end_read = 0; pos < max && !end_read; ) {
-		ch = Bconin( fd );
+		ch = internal_Bconin( fd );
 		switch( ch ) {
 	  	  case '\b':
 			if (pos > 0) {
-				Bconout( fd, '\b' );
-				Bconout( fd, ' ' );
-				Bconout( fd, '\b' );
+				internal_Bconout( fd, '\b' );
+				internal_Bconout( fd, ' ' );
+				internal_Bconout( fd, '\b' );
 				pos--;
 			}
 			break;
 			
 	  	  case '\n':
 		  case '\r':
-			Bconout( fd, '\r' );
-			Bconout( fd, '\n' );
+			internal_Bconout( fd, '\r' );
+			internal_Bconout( fd, '\n' );
 			end_read = 1;
 			break;
 			
 		  default:
-			Bconout( fd, ch );
+			internal_Bconout( fd, ch );
 			dest[pos++] = ch;
 		} 
 	} while( !end_read );

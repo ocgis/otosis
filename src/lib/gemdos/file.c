@@ -112,7 +112,7 @@ GEMDOSFUNC(Fcreate)
  *
  */
 
-  if (mode & (TOS_ATTRIB_VOLUME | TOS_ATTRIB_DIRECTORY))
+  if (attr & (TOS_ATTRIB_VOLUME | TOS_ATTRIB_DIRECTORY))
 	  return TOS_EACCDN;
   
   TOS_TO_UNIX( new_fname, filename );
@@ -255,7 +255,7 @@ GEMDOSFUNC(Fwrite)
   if (fp < 0) {
 	  ret = length;
 	  while( length-- )
-		  Bconout( BIOSDEV(fp), *buffer++ );
+		  internal_Bconout( BIOSDEV(fp), *buffer++ );
 	  return ret;
   }
 

@@ -161,6 +161,8 @@ typedef struct {
   long reserved4;		/* Reserved */
 } Xattr;
 
+typedef Xattr XATTR;
+
 typedef struct {
   ulong b_free;			/* Number of free clusters */
   ulong b_total;		/* Total number of clusters on the drive */
@@ -185,6 +187,11 @@ typedef struct {
   short pid;			/* pid of reader or writer */
 } PMSG;
 
+typedef struct {
+  long sa_handler;
+  short sa_mask;
+  short sa_flags;
+} SIGACTION;
 
 /*
  *  Program flags
