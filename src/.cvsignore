@@ -1,3 +1,4 @@
+*.o
 tos
 Makefile
 .deps
