@@ -131,7 +131,6 @@ TosProgram *load_tos_program( char *filename )
     ntohl(hdr->bsize) + Opt_extra_mem*1024;
   buf = mymalloc( size );
   bp = (TosBasepage *)buf;
-
   prg = (void *)(bp + 1);
 
   /* read program text + data */
@@ -177,8 +176,8 @@ TosProgram *load_tos_program( char *filename )
   prog->size = size;
 
   prog->basepage = bp;
-  prog->basepage->dta = (Dta *)&(prog->basepage->cmdlin[ 0 ]);
-  prog->dta = prog->basepage->dta;
+  prog->basepage->dta = (Dta *)prog->basepage->cmdlin;
+  prog->dta = ntohl(prog->basepage->dta);
 
   /* The program starts in user mode */
   prog->super = 0;

@@ -93,8 +93,8 @@ int
 my_valid_addr(CPUaddr addr,
               CPUlong size)
 {
-  if((addr < my_prog->basepage->lowtpa) ||
-     (addr + size >= my_prog->basepage->hitpa))
+  if((addr < ntohl(my_prog->basepage->lowtpa)) ||
+     (addr + size >= ntohl(my_prog->basepage->hitpa)))
   {
     return 0;
   }
@@ -191,7 +191,7 @@ emulate(TosProgram * prog)
   my_prog = prog;
 
   /* Setup a pointer to basepage and clear one long */
-  sp = htonl((CPUaddr)prog->basepage->hitpa);
+  sp = ntohl((CPUaddr)prog->basepage->hitpa);
   (CPUbyte *)sp -= 4;
   my_put_long(sp, (CPUlong)prog->basepage);
   (CPUbyte *)sp -= 4;
