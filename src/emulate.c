@@ -2,7 +2,7 @@
  *
  *  oTOSis - TOS emulator for Linux/68K
  *
- *  Copyright 1999 Christer Gustavsson <cg@nocrew.org>
+ *  Copyright 1999 - 2001 Christer Gustavsson <cg@nocrew.org>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -33,6 +33,29 @@
 
 #include "emulate.h"
 
+/* FIXME: Maybe it's possible to use CPUexception(2) to signal bus error */
+
+#define TOP_OF_SYSVAR 0x5B3
+
+static
+char
+sysvar[TOP_OF_SYSVAR + 1];
+
+static
+inline
+CPUaddr
+convert_addr(CPUaddr addr)
+{
+  if(addr <= TOP_OF_SYSVAR)
+  {
+    return (CPUaddr)sysvar + addr;
+  }
+  else
+  {
+    return addr;
+  }
+}
+
 
 static TosProgram * my_prog = NULL;
 
@@ -40,7 +63,7 @@ static
 CPUbyte
 my_get_byte(CPUaddr addr)
 {
-  return *((CPUbyte *)addr);
+  return *((CPUbyte *)convert_addr(addr));
 }
 
 
@@ -48,7 +71,7 @@ static
 CPUword
 my_get_word(CPUaddr addr)
 {
-  return ntohs(*((CPUword *)addr));
+  return ntohs(*((CPUword *)convert_addr(addr)));
 }
 
 
@@ -56,7 +79,7 @@ static
 CPUlong
 my_get_long(CPUaddr addr)
 {
-  return ntohl(*((CPUlong *)addr));
+  return ntohl(*((CPUlong *)convert_addr(addr)));
 }
 
 
@@ -65,7 +88,7 @@ void
 my_put_byte(CPUaddr addr,
             CPUbyte value)
 {
-  *((CPUbyte *)addr) = value;
+  *((CPUbyte *)convert_addr(addr)) = value;
 }
 
 
@@ -74,7 +97,7 @@ void
 my_put_word(CPUaddr addr,
             CPUword value)
 {
-  *((CPUword *)addr) = htons(value);
+  *((CPUword *)convert_addr(addr)) = htons(value);
 }
 
 
@@ -83,7 +106,7 @@ void
 my_put_long(CPUaddr addr,
             CPUlong value)
 {
-  *((CPUlong *)addr) = htonl(value);
+  *((CPUlong *)convert_addr(addr)) = htonl(value);
 }
 
 
@@ -153,7 +176,7 @@ my_handle_exception(int     nr,
 	fprintf(stderr, "Illegal Xgemdos call: 0x%x\n", CPUget_dreg(0));
       }
 #else /* USE_GEM */
-      fprintf(stderr, "Xgemdos not supported in this compile.\n");
+      fprintf(stderr, "Xgemdos not supported in this build.\n");
 #endif /* USE_GEM */
       break;
 
@@ -245,6 +268,9 @@ emulate(TosProgram * prog)
 #ifdef USE_GEM
   /* Setup path mode for oAESis to MiNT paths */
   Oaesis_set_path_mode(OAESIS_PATH_MODE_MINT);
+
+  /* Emulated clients always use big endian */
+  Oaesis_set_client_endian(OAESIS_ENDIAN_BIG);
 
   /* Setup a callback handler for oAESis */
   Oaesis_callback_handler(handle_callback);
