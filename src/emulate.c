@@ -232,6 +232,9 @@ emulate(TosProgram * prog)
   CPUaddr sp;
   my_prog = prog;
 
+  /* Setup path mode for oAESis to MiNT paths */
+  Oaesis_set_path_mode(OAESIS_PATH_MODE_MINT);
+
   /* Setup a callback handler for oAESis */
   Oaesis_callback_handler(handle_callback);
 
