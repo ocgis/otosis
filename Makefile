@@ -5,6 +5,12 @@
 # select whether to support debugging ('yes' or 'no')
 DEBUG = yes
 
+# set to 'no' if you don't have oVDIsis, or don't want to use it,
+# otherwise 'yes'. Be sure OVDISISDIR is set correctly if 'yes'.
+XGEMDOS = yes
+OVDISISDIR = /usr/local/src/osis/ovdisis
+OAESISDIR = /usr/local/src/osis/noaesis
+
 # compilers and flags:
 CC      = gcc
 CFLAGS  = -Wall -Wstrict-prototypes -I$(shell pwd)/include
@@ -12,6 +18,7 @@ LD      = gcc
 LDFLAGS = 
 AR      = ar
 LIBS    = -lncurses
+
 
 # different CFLAGS depending on DEBUG
 ifeq ($(DEBUG),yes)
@@ -59,6 +66,16 @@ OBJS = tos.o version.o load.o optfile.o traps.o file_emu.o malloc.o \
 # C sources in main directory
 CSRC = tos.c version.c  load.c optfile.c traps.c file_emu.c malloc.c \
        trace.c strace.c
+
+# Add some things if xgemdos is to be used
+ifeq ($(XGEMDOS),yes)
+CFLAGS += -I$(OVDISISDIR) -I$(OAESISDIR) -DUSE_XGEMDOS
+LIBS += -lfb
+SUBDIRS += xgemdos
+SUBDIROBJS += xgemdos/xgemdos.a $(OVDISISDIR)/src/ovdisis.a \
+	$(OAESISDIR)/src/oaesis.a
+endif
+
 
 # determine prerequisites for 'make all' to be done before making
 # target $(EXEC). These could be .depend and optiondef.[ch]
