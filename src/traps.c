@@ -33,7 +33,7 @@
 #include "prototypes.h"
 
 
-extern int in_emu;
+extern volatile int in_emu;
 
 
 void sigsegv_handler( int sig, int vecnum, struct sigcontext *scp )

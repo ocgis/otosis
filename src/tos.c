@@ -53,7 +53,7 @@
 /* Global variables */
 TosProgram *prog;
 volatile int in_emu = 1;		/* 1 if in emulator, 0 if running tos prog */
-char *TosPrgName;				/* basename of TOS program */
+char *TosPrgName;			/* basename of TOS program */
 ulong *malloc_regions;			/* list of malloced memory regions */
 int malloc_regions_size;		/* size of malloc_regions */
 
