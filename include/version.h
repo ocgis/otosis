@@ -24,9 +24,9 @@
 #ifndef _version_h
 #define _version_h
 
-#define OTOSIS_VERSION			"0.23"
+#define OTOSIS_VERSION			"0.30"
 #define OTOSIS_VERSION_MAJOR	0
-#define OTOSIS_VERSION_MINOR	23
+#define OTOSIS_VERSION_MINOR	30
 
 #endif  /* _version_h */
 

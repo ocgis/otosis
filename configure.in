@@ -3,7 +3,7 @@ AC_INIT(src/tos.c)
 
 dnl For automake
 PACKAGE=otosis
-VERSION=0.3
+VERSION=0.30
 
 dnl Initialize automake macros
 AM_INIT_AUTOMAKE($PACKAGE, $VERSION, no-define)

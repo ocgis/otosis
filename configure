@@ -526,7 +526,7 @@ fi
 
 
 PACKAGE=otosis
-VERSION=0.3
+VERSION=0.30
 
 ac_aux_dir=
 for ac_dir in $srcdir $srcdir/.. $srcdir/../..; do
