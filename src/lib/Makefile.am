@@ -27,7 +27,8 @@ xgemdos_sources = \
 	xgemdos.c xgemdos_dispatch.c xgemdosbind.c
 
 common_sources = \
-	file_emu.c init.c init.h malloc.c optiondef.c scancode_us.c tty.c
+	file_emu.c init.c init.h malloc.c optfile.c optiondef.c scancode_us.c \
+	tty.c
 
 BUILT_SOURCES =  optiondef.c scancode_us.c
 

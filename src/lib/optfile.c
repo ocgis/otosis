@@ -50,7 +50,7 @@
 #include "prototypes.h"
 #include "option.h"
 
-extern char *TosPrgName;
+char *TosPrgName = "";
 
 /*
  * read all possible config files

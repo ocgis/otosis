@@ -333,7 +333,6 @@ typedef struct {
 			   })
 \
 typedef SInt32 TosSystemCall( char * );
-
 #ifdef DEBUG
 
 extern int mid_of_line;		/* declared in strace.c */

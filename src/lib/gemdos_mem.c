@@ -4,6 +4,7 @@
  *
  *  Copyright 1996 Elias Martenson <elias@omicron.se>
  *  Copyright 1996 Roman Hodek <Roman.Hodek@informatik.uni-erlangen.de>
+ *  Copyright 1999 Christer Gustavsson <cg@nocrew.org>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -65,40 +66,58 @@ GEMDOSFUNC(Mxalloc)
   return gemdos_Malloc( _args );
 }
 
+
+/*
+** Description
+** Implementation of Malloc()
+**
+** 1999-01-26 CG
+*/
 GEMDOSFUNC(Malloc)
 {
   TOSARG(ulong,size);
   ulong addr;
-  ulong *w;
+  int   i = 0;
 
-  if( size == -1 )  return Opt_mem_free*1024;
+  if (size == -1) {
+    return Opt_mem_free*1024;
+  }
+  
   addr = (ulong)malloc( size );
-
+  
   if (malloc_regions == NULL) {
     malloc_regions = malloc (sizeof (ulong) * 10);
     malloc_regions_size = 10;
+    malloc_regions[0] = 0;
   }
-
-  for( w = malloc_regions ; *w && *w != -1 ; w++ );
-  if( *w == 0 ) {
-    if( w - malloc_regions >= malloc_regions_size ) {
-      malloc_regions = myrealloc( malloc_regions, sizeof( ulong ) *
-				 (malloc_regions_size + 10) );
+  
+  while ((malloc_regions[i] != 0) && (malloc_regions[i] != -1)) {
+    i++;
+  }
+  
+  if (malloc_regions[i] == 0) {
+    if (i >= malloc_regions_size) {
+      malloc_regions = myrealloc (malloc_regions,
+                                  sizeof (ulong) * (malloc_regions_size + 10));
       malloc_regions_size += 10;
     }
-    w[ 1 ] = 0;
+    
+    malloc_regions[i + 1] = 0;
   }
-  *w = addr;
+
+  malloc_regions[i] = addr;
+  
   return addr;
 }
+
 
 GEMDOSFUNC(Mfree)
 {
   TOSARG(void *,addr);
   ulong *w;
-
-/* Mfree should return a negative error code if it fails,
-   does anybody know what error codes Free might return? */
+  
+  /* Mfree should return a negative error code if it fails,
+     does anybody know what error codes Free might return? */
   for( w = malloc_regions ; *w && *w != (ulong)addr ; w++ );
 
   if( *w ) {
@@ -110,6 +129,7 @@ GEMDOSFUNC(Mfree)
     return TOS_EIMBA;
   }
 }
+
 
 GEMDOSFUNC(Mshrink)
 {

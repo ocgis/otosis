@@ -55,7 +55,7 @@
 /* Global variables */
 extern TosProgram *prog;
 extern volatile int in_emu;		 /* 1 if in emulator, 0 if running tos prog */
-char *TosPrgName;			     /* basename of TOS program */
+extern char *TosPrgName;			     /* basename of TOS program */
 extern ulong *malloc_regions;    /* list of malloced memory regions */
 extern int malloc_regions_size;	 /* size of malloc_regions */
 
@@ -483,103 +483,6 @@ static void parse_cmdline_options( char *argv[], int start, int end )
 }
 
 
-#define SETUP_MAP(CHR,NUM) \
-  setup_map( Opt_drive ## CHR, Opt_current ## CHR, NUM );
-
-static void setup_map( char *map, char *curr, int num )
-{
-  char *newcurr = curr;
-  char currdir[ 1024 ];
-  char currdir_tos[ 1024 ];
-
-  if( strcmp( map, "-" ) == 0 ) {
-	prog->drive_map[ num ] = NULL;
-	prog->curdir[ num ] = NULL;
-  }
-  else {
-	if( strcmp( curr, "-" ) == 0 ) {
-	  if( strcmp( map, "/" ) != 0 ) {
-		printf( "Error setting current%c\n"
-			   "Auto setting of current directory requires drive map "
-			   "to map to /.\n", num + 'A' );
-		newcurr = "\\";
-	  }
-	  if( getcwd( currdir, 1024 ) == NULL ) {
-		perror( "error getting current directory" );
-		rexit( 1 );
-	  }
-	  if( Opt_MiNT && Opt_auto_current_long ) {
-		unix_to_tos_long( currdir_tos, currdir );
-	  }
-	  else {
-		unix_to_tos_path_short( currdir_tos, currdir );
-	  }
-	  newcurr = currdir_tos;
-	}
-	else if( *curr != '\\' ) {
-	  printf( "curr = %s\n", curr );
-	  printf( "Illegal current directory option: current%c. "
-			 "Must be absolute.\n", num + 'A' );
-	  newcurr = "\\";
-	}
-	DDEBUG( "mapping root directory of drive %c to: %s\n",
-		   num + 'a', map );
-	DDEBUG( "mapping current directory of drive %c to: %s\n",
-		   num + 'a', newcurr );
-	prog->drive_map[ num ] = mymalloc( 1024 );
-	strcpy( prog->drive_map[ num ], map );
-	prog->curdir[ num ] = mymalloc( 1024 );
-	strcpy( prog->curdir[ num ], newcurr );
-  }
-}
-
-
-void setup_drivemap( void )
-{
-  int drvchar;
-  char *currpath;
-
-  SETUP_MAP(A,0);
-  SETUP_MAP(B,1);
-  SETUP_MAP(C,2);
-  SETUP_MAP(D,3);
-  SETUP_MAP(E,4);
-  SETUP_MAP(F,5);
-  SETUP_MAP(G,6);
-  SETUP_MAP(H,7);
-  SETUP_MAP(I,8);
-  SETUP_MAP(J,9);
-  SETUP_MAP(K,10);
-  SETUP_MAP(L,11);
-  SETUP_MAP(M,12);
-  SETUP_MAP(N,13);
-  SETUP_MAP(O,14);
-  SETUP_MAP(P,15);
-  SETUP_MAP(Q,16);
-  SETUP_MAP(R,17);
-  SETUP_MAP(S,18);
-  SETUP_MAP(T,19);
-  SETUP_MAP(V,21);
-  SETUP_MAP(W,22);
-  SETUP_MAP(X,23);
-  SETUP_MAP(Y,24);
-  SETUP_MAP(Z,25);
-
-  prog->drive_map[ 'u' - 'a' ] = NULL;
-
-  currpath = Opt_current_drive;
-  drvchar = currpath[ 0 ];
-  if( isupper( drvchar ) ) {
-	drvchar = tolower( drvchar );
-  }
-  if( drvchar < 'a' || drvchar > 'z' ) {
-	DDEBUG( "Illegal current drive specification: '%s'\n", Opt_current_drive );
-	drvchar = 'c';
-  }
-  prog->curdrv = drvchar - 'a';
-
-  
-}
 
 
 
