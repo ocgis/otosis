@@ -74,11 +74,11 @@
 /* Define if you have the strtol function.  */
 #undef HAVE_STRTOL
 
+/* Define if you have the <aesbind.h> header file.  */
+#undef HAVE_AESBIND_H
+
 /* Define if you have the <dirent.h> header file.  */
 #undef HAVE_DIRENT_H
-
-/* Define if you have the <extern_oaesis.h> header file.  */
-#undef HAVE_EXTERN_OAESIS_H
 
 /* Define if you have the <fcntl.h> header file.  */
 #undef HAVE_FCNTL_H

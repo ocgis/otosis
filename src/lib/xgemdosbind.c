@@ -23,12 +23,13 @@
 #include "div.h"
 #include "xgemdos.h"
 
+#include <aesbind.h>
+#include <vdibind.h>
+
 /* None of these will actually be used if the
  * programmer is at least somewhat sane, but
  * I still included them here.
  */
-
-#ifdef USE_XGEMDOS
 
 long AES(AESPB *aespb)
 {
@@ -45,5 +46,4 @@ long Warmstart(void)
   (void)dispatch_xgemdos(0, 0);
 }
 
-#endif
 

@@ -44,9 +44,7 @@
 #include "bios.h"
 #include "xbios.h"
 #include "gemdos.h"
-#ifdef USE_XGEMDOS
 #include "xgemdos.h"
-#endif /* USE_XGEMDOS */
 #include "option.h"
 #include "vt52.h"
 
@@ -218,14 +216,9 @@ void sigill_handler( int sig, int vec, struct sigcontext *s )
 		  s->sc_d0 = dispatch_gemdos( (char *)s->sc_usp );
 		  break;
 		case 2:
-#ifdef USE_XGEMDOS
 		  /* xgemdos is special case, arguments aren't sent through stack
 		     This method will do for now */
 		  dispatch_xgemdos( s->sc_d0, s->sc_d1 );
-#else
-		  printf( "oVDIsis not yet implemented. Complain to:\n"
-				  "Tomas Berndtsson (tomas@nocrew.org)\n" );
-#endif
 		  break;
 		case 13:
 		  s->sc_d0 = dispatch_bios( (char *)s->sc_usp );
@@ -268,20 +261,16 @@ void setup_tty( void )
    */
   setup_vt52();
   
-#ifdef USE_XGEMDOS
   /* This will open the framebuffer by calling v_opnwk() */
   if( prog->gem )
     init_xgemdos();
-#endif /* USE_XGEMDOS */
 }
 
 void restore_tty( void )
 {
-#ifdef USE_XGEMDOS
   /* This will close the framebuffer by calling v_clswk() */
   if( prog->gem )
     exit_xgemdos();
-#endif /* USE_XGEMDOS */
 
   ioctl( 0, TCSETS, &old_termios );
   has_setup_tty = 0;

@@ -51,7 +51,6 @@ TosProgram *load_tos_program( char *filename )
   /* Set up the MiNT emulation flag */
   prog->emulate_mint = Opt_MiNT;
 
-#ifdef USE_XGEMDOS
   /* Set up GEM flag, if program name ends on .app or .prg
 	 and Opt_GEM is not set to "no" */
   /* Use case insensitive compare */
@@ -60,7 +59,6 @@ TosProgram *load_tos_program( char *filename )
 	prog->gem = 1;
   else
 	prog->gem = 0;
-#endif /* USE_XGEMDOS */
   
   /* Set up the environment */
   DDEBUG( "Environment: %s\n", Opt_environment );
