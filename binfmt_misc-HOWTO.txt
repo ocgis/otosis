@@ -1,0 +1,3 @@
+Cat the following line to /proc/sys/fs/binfmt_misc/register to make Linux aware
+of TOS binaries:
+:oTOSis:M:0:\x60\x1a::/usr/local/bin/tos:
