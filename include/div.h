@@ -4,6 +4,7 @@
  *
  *  Copyright 1996 Elias Martenson <elias@omicron.se>
  *  Copyright 1996 Roman Hodek <Roman.Hodek@informatik.uni-erlangen.de>
+ *  Copyright 1998 Tomas Berndtsson <tomas@nocrew.org>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -95,6 +96,7 @@ typedef struct {
   int curdrv;			/* Current drive */
   char *curdir[ 'z' - 'a' + 1 ]; /* Current directory */
   char *drive_map[ 'z' - 'a' + 1 ]; /* Drive map */
+  int gem;			/* Use GEM */
 } TosProgram;
 
 typedef struct {
@@ -288,7 +290,13 @@ typedef struct {
 				  }				\
 				})
 
-
+#define TOS_TO_UNIX(D,S)   ({						  \
+			     int ret;					  \
+			     if( (ret = tos_to_unix( (D), (S) )) != 0 ) { \
+			       return ret;				  \
+			     }						  \
+			   })
+\
 typedef long TosSystemCall( char * );
 
 #ifdef DEBUG
@@ -333,14 +341,15 @@ extern int mid_of_line;		/* declared in strace.c */
 
 #else
 #define DDEBUG(fmt,args...)
-#define	STRACE_BEGIN(mod)
-#define	STRACE_END(mod)
+#define	STRACE_BEGIN(mod,a)
+#define	STRACE_END(mod,a,r)
 #endif
 
 #define XFUNC(prefix,name) long prefix##_##name( char *_args )
 #define	BIOSFUNC(name)     XFUNC(bios,name)
 #define	XBIOSFUNC(name)    XFUNC(xbios,name)
 #define	GEMDOSFUNC(name)   XFUNC(gemdos,name)
+#define	XGEMDOSFUNC(name)  XFUNC(xgemdos,name)
 #define	MINTFUNC(name)     XFUNC(mint,name)
 
 #define TOSARG(type,name) type name = *((type *)_args)++
@@ -350,10 +359,11 @@ extern int mid_of_line;		/* declared in strace.c */
 		printf( "Unimplemented " #prefix " call " #name "\n" );	\
 		return TOS_EINVFN;					\
 	}
-#define	BIOS_UNIMP(name)   XUNIMP(bios,name)
-#define	XBIOS_UNIMP(name)  XUNIMP(xbios,name)
-#define	GEMDOS_UNIMP(name) XUNIMP(gemdos,name)
-#define	MINT_UNIMP(name)   XUNIMP(mint,name)
+#define	BIOS_UNIMP(name)    XUNIMP(bios,name)
+#define	XBIOS_UNIMP(name)   XUNIMP(xbios,name)
+#define	GEMDOS_UNIMP(name)  XUNIMP(gemdos,name)
+#define	XGEMDOS_UNIMP(name) XUNIMP(xgemdos,name)
+#define	MINT_UNIMP(name)    XUNIMP(mint,name)
 
 /* The attribute 'SIGSTACK_STATIC' is used before certain local variables that
  * can cause stack overflows if there are no sigstacks. It's currently defined
