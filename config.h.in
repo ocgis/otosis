@@ -74,9 +74,6 @@
 /* Define if you have the strtol function.  */
 #undef HAVE_STRTOL
 
-/* Define if you have the <aesbind.h> header file.  */
-#undef HAVE_AESBIND_H
-
 /* Define if you have the <dirent.h> header file.  */
 #undef HAVE_DIRENT_H
 
@@ -100,9 +97,6 @@
 
 /* Define if you have the <unistd.h> header file.  */
 #undef HAVE_UNISTD_H
-
-/* Define if you have the <vdibind.h> header file.  */
-#undef HAVE_VDIBIND_H
 
 /* Define if you have the ncurses library (-lncurses).  */
 #undef HAVE_LIBNCURSES

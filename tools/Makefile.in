@@ -60,19 +60,9 @@ POST_UNINSTALL = :
 AWK = @AWK@
 CC = @CC@
 MAKEINFO = @MAKEINFO@
-OAESIS_CFLAGS = @OAESIS_CFLAGS@
-OAESIS_CONFIG = @OAESIS_CONFIG@
-OAESIS_LIBS = @OAESIS_LIBS@
-OVDISIS_CFLAGS = @OVDISIS_CFLAGS@
-OVDISIS_CONFIG = @OVDISIS_CONFIG@
-OVDISIS_LIBS = @OVDISIS_LIBS@
 PACKAGE = @PACKAGE@
 RANLIB = @RANLIB@
 VERSION = @VERSION@
-oaesis_cflags = @oaesis_cflags@
-oaesis_libs = @oaesis_libs@
-ovdisis_cflags = @ovdisis_cflags@
-ovdisis_libs = @ovdisis_libs@
 
 noinst_PROGRAMS = make_scancode
 
@@ -99,7 +89,7 @@ DIST_COMMON =  Makefile.am Makefile.in
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
-TAR = tar
+TAR = gtar
 GZIP = --best
 DEP_FILES =  .deps/make_scancode.P
 SOURCES = $(make_scancode_SOURCES)
