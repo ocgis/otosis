@@ -25,6 +25,10 @@
 #include <signal.h>
 #include <errno.h>
 #include <sys/stat.h>
+#include <sys/types.h>
+#include <sys/ipc.h>
+#include <sys/msg.h>
+#include <sys/sem.h>
 
 #include <div.h>
 #include <prototypes.h>
@@ -208,7 +212,121 @@ MINTFUNC(Sysconf)
 }
 
 MINT_UNIMP(Psigpending);
-MINT_UNIMP(Pmsg);
+
+
+/* Defines used in Pmsg */
+#define FIX_BOXID(id) ((id) & 0x7ffffff)
+#define OUR_BOX 0x12345678
+
+/* Fix error messages!! */
+
+/*
+** Description
+** Send or receive message to or from message box
+**
+** 1998-09-05 CG
+*/
+static long internal_Pmsg(short mode, long mboxid, PMSG * msg)
+{
+  int  msqid;
+  struct {
+    int  type;
+    PMSG msg;
+  } ipc_msg;
+
+
+  if (mode == TOS_PMSG_WRITE) {
+    int err;
+
+    msqid = msgget (OUR_BOX, 0666 | IPC_CREAT);
+    
+    if (msqid < 0) {
+      return -1;
+    }
+
+    ipc_msg.type = FIX_BOXID (mboxid);
+    ipc_msg.msg = *(PMSG *)msg;
+    ipc_msg.msg.pid = getpid ();
+
+    err = msgsnd (msqid, &ipc_msg, sizeof (ipc_msg.msg), 0);
+
+    if (err < 0) {
+      fprintf (stderr, "Pmag: TOS_PMSG_WRITE: Send data: error %d\n", err);
+      
+      return -1;
+    }
+
+    /* Wait for acknowledge */
+    err = msgrcv (msqid,
+                  &ipc_msg, sizeof (ipc_msg.msg),
+                  FIX_BOXID (0xffff0000 | ipc_msg.msg.pid),
+                  0);
+    
+    if (err < 0) {
+      fprintf (stderr, "Pmsg: TOS_PMSG_WRITE: Wait for ack: error %d, box 0x%x\n",
+               err,
+               FIX_BOXID (0xffff0000 |ipc_msg.msg.pid));
+      perror ("Pmsg");
+      return -1;
+    }
+    ((PMSG *)msg)->pid = ipc_msg.msg.pid;
+  } else if (mode == TOS_PMSG_READ) {
+    int err;
+
+    msqid = msgget (OUR_BOX, 0666 | IPC_CREAT);
+    
+    if (msqid < 0) {
+      return -1;
+    }
+    
+    err = msgrcv (msqid,
+                  &ipc_msg,
+                  sizeof (ipc_msg.msg),
+                  FIX_BOXID (mboxid),
+                  0);
+
+    if (err < 0) {
+      fprintf (stderr, "Pmsg: TOS_PMSG_READ: Receive: error %d\n", err);
+      
+      return -1;
+    }
+
+    *(PMSG *)msg = ipc_msg.msg;
+
+    /* Send acknowledge */
+    ipc_msg.type = FIX_BOXID (0xffff0000 | ipc_msg.msg.pid);
+    ipc_msg.msg.pid = getpid ();
+    
+    err = msgsnd (msqid, &ipc_msg, sizeof (ipc_msg.msg), 0);
+
+    if (err < 0) {
+      fprintf (stderr, "Pmsg: TOS_PMSG_READ: Send ack: error %d\n", err);
+
+      return -1;
+    }
+  } else if (mode == TOS_PMSG_WRITEREAD ) {
+    if (internal_Pmsg (TOS_PMSG_WRITE, mboxid, msg) == -1) {
+      return -1;
+    } else {
+      return internal_Pmsg (TOS_PMSG_READ, 0xffff0000 | getpid (), msg);
+    }
+  } else {
+    fprintf (stderr, "Pmsg: Unhandled mode 0x%x", mode);
+    return -1;
+  }
+
+  return 0;
+}
+
+MINTFUNC(Pmsg)
+{
+  TOSARG(short,mode);
+  TOSARG(long,mboxid);
+  TOSARG(PMSG *,msg);
+  
+  return internal_Pmsg(mode, mboxid, msg);
+}
+
 MINT_UNIMP(Fmidipipe);
 
 MINTFUNC(Prenice)
@@ -230,7 +348,103 @@ MINTFUNC(Pumask)
   return umask( mode );
 }
 
-MINT_UNIMP(Psemaphore);
+
+/* Fix error messages!! */
+
+/*
+** Description
+** Create a semaphore which may only be accessed by one process at a time.
+**
+** 1998-09-05 CG
+*/
+MINTFUNC(Psemaphore)
+{
+  TOSARG(short,mode);
+  TOSARG(long,id);
+  TOSARG(long,timeout);
+
+  switch (mode) {
+  case TOS_SEM_CREATE:
+  {
+    int         semid;
+    union semun arg;
+    
+    semid = semget (id, 1, 0666 | IPC_CREAT /*| IPC_EXCL*/);
+    
+    /* Was there an error? */
+    if (semid < 0) {
+      fprintf (stderr, "otosis: Psemaphore: TOS_SEM_CREATE: semid = %d\n", semid);
+      perror ("otosis");
+      return -1;
+    }
+    
+    arg.val = 0;
+    if (semctl(semid, 0, SETVAL, arg) == -1) {
+      fprintf (stderr, "otosis: Psemaphore: TOS_SEM_CREATE: Couldn't set initial value\n");
+      perror("otosis");
+      return -1;
+    }
+
+    return 0;
+  }
+
+  case TOS_SEM_LOCK:
+  {
+    int           semid;
+    struct sembuf sb = {0, -1, 0};
+
+    semid = semget (id, 1, 0);
+
+    if (semop (semid, &sb, 1) < 0) {
+      fprintf (stderr, "otosis: Psemaphore: TOS_SEM_LOCK: couldn't lock\n");
+      perror ("otosis");
+      return -1;
+    }
+
+    return 0;
+  }
+  case TOS_SEM_UNLOCK:
+  {
+    int           semid;
+    struct sembuf sb = {0, 1, 0};
+
+    semid = semget (id, 1, 0);
+
+    if (semop (semid, &sb, 1) < 0) {
+      fprintf (stderr, "otosis: Psemaphore: TOS_SEM_LOCK: couldn't lock\n");
+      perror ("otosis");
+      return -1;
+    }
+
+    return 0;
+  }
+  case TOS_SEM_DESTROY:
+  {
+    int         semid;
+    union semun arg;
+
+    semid = semget (id, 1, 0);
+
+    if (semid < 0) {
+      fprintf (stderr, "otosis: Psemaphore: TOS_SEM_DESTROY: Couldn't get semaphore\n");
+      perror("otosis");
+      return -1;
+    }
+
+    if (semctl(semid, 0, IPC_RMID, arg) < 0) {
+      fprintf (stderr, "otosis: Psemaphore: TOS_SEM_DESTROY: Couldn't remove semaphore\n");
+      perror("otosis");
+      return -1;      
+    }
+
+    return 0;
+  }
+  default :
+    fprintf (stderr, "otosis: Psemaphore: Unknown mode %d\n", mode);
+    return -1;
+  }
+}
+
 MINT_UNIMP(Dlock);
 MINT_UNIMP(Psigpause);
 MINT_UNIMP(Psigaction);
