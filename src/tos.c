@@ -51,6 +51,7 @@
 #endif
 #include "option.h"
 #include "vt52.h"
+#include "emulate.h"
 
 /* Global variables */
 extern TosProgram *prog;
@@ -162,7 +163,6 @@ int main( int argc, char **argv )
 
   in_emu = 0;
   /* start up the TOS program; locate stack at top of TPA */
-  /* FIXME */
 #ifdef mc68000
   __asm__ __volatile__
 	  ( "movel %2,%/sp		\n\t"
@@ -173,6 +173,8 @@ int main( int argc, char **argv )
 		: /* no outputs */
 		: "g" (prog->basepage), "a" (prog->text),
 		  "g" (prog->basepage->hitpa) );
+#else
+  emulate(prog);
 #endif
   
   return 0;
