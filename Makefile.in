@@ -86,7 +86,7 @@ bin_SCRIPTS = otosis-config
 m4datadir = $(datadir)/aclocal
 m4data_DATA = otosis.m4
 
-EXTRA_DIST = OTOSIS-VERSION
+EXTRA_DIST = OTOSIS-VERSION options.def scancode.us
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = config.h

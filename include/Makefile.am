@@ -1,5 +1,5 @@
-noinst_HEADERS = fd.h option.h sysvars.h version.h \
-	toserrors.h vt52.h div.h prototypes.h traps.h \
+noinst_HEADERS = bindproto.h fd.h option.h sysvars.h version.h \
+	toserrors.h vt52.h div.h memory.h prototypes.h traps.h \
 	xgemdos.h bios.h gemdos.h xbios.h mint.h \
 	optiondef.h compile.h
 
