@@ -111,8 +111,7 @@ include/option.h: include/optiondef.h
 optiondef.c include/optiondef.h: options.def options.awk
 	awk -f options.awk <$<
 
-#include/compile.h: force
-include/compile.h:
+include/compile.h: force
 	@echo \#define OTOSIS_COMPILE_TIME \"`date '+%D %T'`\" > include/compile.h
 	@echo \#define OTOSIS_COMPILE_BY \"`whoami`\" >> include/compile.h
 	@echo \#define OTOSIS_COMPILE_HOST \"`hostname`\" >> include/compile.h
