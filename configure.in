@@ -80,6 +80,7 @@ AC_OUTPUT(Makefile \
 	include/Makefile \
 	src/Makefile \
         src/lib/Makefile \
+        src/m68kemu/Makefile \
 	doc/Makefile \
         otosis-config \
         otosis.m4
