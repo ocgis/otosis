@@ -228,7 +228,7 @@ void sigill_handler( int sig, int vec, struct sigcontext *s )
 		  break;
 #ifdef USE_XGEMDOS
 		case 2:
-          switch(s->sc_d0)
+          switch(s->sc_d0 & 0xffff)
           {
           case 115: /* VDI */
             vdi_call(s->sc_d1);
@@ -239,7 +239,7 @@ void sigill_handler( int sig, int vec, struct sigcontext *s )
             break;
             
           default:
-            fprintf(stderr, "Illegal Xgemdos call: %d\n", CPUget_dreg(0));
+            fprintf(stderr, "Illegal Xgemdos call: 0x%x\n", CPUget_dreg(0));
           }
           break;
 #endif

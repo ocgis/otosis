@@ -131,7 +131,7 @@ my_handle_exception(int     nr,
       break;
 
     case 2:
-      switch(CPUget_dreg(0))
+      switch(CPUget_dreg(0) & 0xffff)
       {
       case 115: /* VDI */
         vdi_call(CPUget_dreg(1));
@@ -142,7 +142,7 @@ my_handle_exception(int     nr,
         break;
 
       default:
-        fprintf(stderr, "Illegal Xgemdos call: %d\n", CPUget_dreg(0));
+        fprintf(stderr, "Illegal Xgemdos call: 0x%x\n", CPUget_dreg(0));
       }
       break;
 
