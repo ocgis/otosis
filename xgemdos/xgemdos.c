@@ -30,7 +30,7 @@
 #include <toserrors.h>
 #include <xgemdos.h>
 
-#include <extern_ovdisis.h>
+#include <vdibind.h>
 #include <extern_oaesis.h>
 
 /* Should call PTerm(0), but this is the same thing */

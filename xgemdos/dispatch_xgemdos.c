@@ -30,7 +30,7 @@
 #include <toserrors.h>
 #include <xgemdos.h>
 
-#include <extern_ovdisis.h>
+#include <vdibind.h>
 
 extern TosProgram *prog;
 
@@ -174,40 +174,15 @@ static int vdi_handle;
 
 void init_xgemdos( void )
 {
-  VDIPARBLK e_vdiparblk;
-  VDIPB o_vdipb;
-  int i;
   int work_in[11] = { 1,1,1,1,1,1,1,1,1,1,2 };
+  int work_out[57];
     
-  o_vdipb.contrl=e_vdiparblk.contrl;
-  o_vdipb.intin=e_vdiparblk.intin;
-  o_vdipb.ptsin=e_vdiparblk.ptsin;
-  o_vdipb.intout=e_vdiparblk.intout;
-  o_vdipb.ptsout=e_vdiparblk.ptsout;        
-
-  for(i=0 ; i<11 ; i++)
-	o_vdipb.intin[i] = work_in[i];
-          
-  o_vdipb.contrl[0] = 1; /* v_opnwk */
-  vdi_call(&o_vdipb);
-
-  vdi_handle = o_vdipb.contrl[6];
+  v_opnwk(work_in, &vdi_handle, work_out);
 }
 
 void exit_xgemdos( void )
 {
-  VDIPARBLK e_vdiparblk;
-  VDIPB o_vdipb;
-    
-  o_vdipb.contrl=e_vdiparblk.contrl;
-  o_vdipb.intin=e_vdiparblk.intin;
-  o_vdipb.ptsin=e_vdiparblk.ptsin;
-  o_vdipb.intout=e_vdiparblk.intout;
-  o_vdipb.ptsout=e_vdiparblk.ptsout;        
-
-  o_vdipb.contrl[6] = vdi_handle;
-  o_vdipb.contrl[0] = 2; /* v_clswk */
-  vdi_call(&o_vdipb);
+  v_clswk(vdi_handle);
 }
 
 /* Local Variables:              */
