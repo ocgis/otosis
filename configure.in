@@ -36,7 +36,9 @@ dnl Use libtool to create libotosis
 AM_PROG_LIBTOOL
 
 dnl Checks for libraries.
+AC_CHECK_LIB(m, main)
 AC_CHECK_LIB(ncurses,main)
+AC_CHECK_LIB(ocpuis,main)
 
 dnl Checks for header files.
 AC_HEADER_DIRENT
