@@ -1,4 +1,4 @@
-CFLAGS = -Wall
+CFLAGS = @CFLAGS@ -Wall
 
 INCLUDES = -I../../include
 
