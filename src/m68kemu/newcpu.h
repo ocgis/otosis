@@ -240,6 +240,33 @@ static INLINE UInt32 get_disp_ea_000 (UInt32 base, UInt32 dp)
 #endif
 }
 
+
+
+static INLINE void m68k_do_rts(void)
+{
+    m68k_setpc(get_long(m68k_areg(regs, 7)));
+    m68k_areg(regs, 7) += 4;
+}
+
+static INLINE void m68k_do_bsr(Ptr32 oldpc, SInt32 offset)
+{
+    m68k_areg(regs, 7) -= 4;
+    put_long(m68k_areg(regs, 7), oldpc);
+    m68k_incpc(offset);
+}
+
+static INLINE void m68k_do_jsr(Ptr32 oldpc, Ptr32 dest)
+{
+    m68k_areg(regs, 7) -= 4;
+    put_long(m68k_areg(regs, 7), oldpc);
+    m68k_setpc(dest);
+}
+
+
+
+
+
+
 extern SInt32 ShowEA (int reg, amodes mode, wordsizes size, char *buf);
 
 extern void MakeSR (void);
