@@ -24,6 +24,7 @@
 #include "config.h"
 #endif /* HAVE_CONFIG_H */
 
+#include <linea.h>
 #include <netinet/in.h>
 #ifdef USE_GEM
 #include <oaesis.h>
@@ -140,8 +141,6 @@ void
 my_handle_exception(int     nr,
                     CPUaddr oldpc)
 {
-  oldpc = CPUget_pc();
-
   if(nr > 32)
   {
     CPUaddr usp;
@@ -149,7 +148,6 @@ my_handle_exception(int     nr,
     int     trap_num;
     
     trap_num = nr - 32;
-
     switch(trap_num)
     {
     case 1:      /* Gemdos, trap #1 */
@@ -199,6 +197,28 @@ my_handle_exception(int     nr,
     default:
       printf( "cannot handle TRAP #%d\n", trap_num);
       bombs(32 + trap_num);
+    }
+  }
+  else if(nr == 10) /* LineA */
+  {
+    int instruction;
+
+    instruction = my_get_word(oldpc);
+
+    switch(instruction)
+    {
+    case 0xa000:
+      linea0();
+      CPUset_dreg(0, (CPUlong)__aline);  /* Line-A variable table */
+      CPUset_areg(0, (CPUlong)__aline);  /* Line-A variable table */
+      CPUset_areg(1, 0);                 /* FIXME: System font headers */
+      CPUset_areg(2, 0);                 /* FIXME: Line-A functions table */
+      break;
+
+    default:
+      fprintf(stderr, "Fuck LineA from behind (0x%x: 0x%04x)\n",
+              oldpc,
+              instruction);
     }
   }
   else
