@@ -228,10 +228,20 @@ void sigill_handler( int sig, int vec, struct sigcontext *s )
 		  break;
 #ifdef USE_XGEMDOS
 		case 2:
-		  /* xgemdos is special case, arguments aren't sent through stack
-		     This method will do for now */
-		  dispatch_xgemdos( s->sc_d0, s->sc_d1 );
-		  break;
+          switch(s->sc_d0)
+          {
+          case 115: /* VDI */
+            vdi_call(s->sc_d1);
+            break;
+            
+          case 200: /* AES */
+            aes_call(s->sc_d1);
+            break;
+            
+          default:
+            fprintf(stderr, "Illegal Xgemdos call: %d\n", CPUget_dreg(0));
+          }
+          break;
 #endif
 		case 13:
 		  s->sc_d0 = dispatch_bios( (char *)s->sc_usp );

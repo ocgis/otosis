@@ -130,6 +130,22 @@ my_handle_exception(int     nr,
       CPUset_dreg(0, d0);
       break;
 
+    case 2:
+      switch(CPUget_dreg(0))
+      {
+      case 115: /* VDI */
+        vdi_call(CPUget_dreg(1));
+        break;
+
+      case 200: /* AES */
+        aes_call(CPUget_dreg(1));
+        break;
+
+      default:
+        fprintf(stderr, "Illegal Xgemdos call: %d\n", CPUget_dreg(0));
+      }
+      break;
+
     case 13:     /* Bios, trap #13 */
       usp = CPUget_usp();
 
@@ -147,7 +163,7 @@ my_handle_exception(int     nr,
       break;
 
     default:
-      printf( "cannot handle TRAP #%d insn\n", trap_num);
+      printf( "cannot handle TRAP #%d\n", trap_num);
       bombs(32 + trap_num);
     }
   }

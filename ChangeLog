@@ -1,3 +1,9 @@
+1999-10-16  Christer Gustavsson  <cg@nocrew.org>
+
+	* oAESis and oVDIsis are now used as handlers for GEM calls.
+
+	* oTOSis has been split in two: oTOSis and libotosis.
+
 Sun Dec  6 21:22:24 1998  loke  <loke@knight>
 
 	* src/lib/gemdos/file.c:

@@ -86,12 +86,6 @@ else
     AC_MSG_ERROR([otosis directory ($with_otosis) not present or not configured])
   fi
 
-  # For use in oaesis-config
-  otosis_cflags=`$with_otosis/otosis-config --cflags`
-  otosis_libs=`$with_otosis/otosis-config --libs`
-
-  otosis_release=`$with_otosis/otosis-config --version | sed 's%\\.[[0-9]]*$%%'`
-
   # canonicalize relative paths
   case $with_otosis in 
     /*)
@@ -106,9 +100,43 @@ else
   OTOSIS_LIBS=$otosis_dir/libotosis.la
 fi
 
+if test x$with_oaesis = x ; then
+  # Look for separately installed oaesis
+
+  AM_PATH_OAESIS(0.90.0,,
+    AC_MSG_ERROR([
+*** oaesis 0.90.0 or better is required. The latest version of oaesis
+*** is always available from ftp://ftp.nocrew.org.]),
+    liboaesis)
+
+  oaesis_cflags=$OAESIS_CFLAGS
+  oaesis_libs=$OAESIS_LIBS
+else
+  # Use uninstalled oaesis (assume they got the version right)
+
+  if test -x $with_oaesis/oaesis-config ; then 
+    :
+  else
+    AC_MSG_ERROR([oaesis directory ($with_oaesis) not present or not configured])
+  fi
+
+  # canonicalize relative paths
+  case $with_oaesis in 
+    /*)
+      oaesis_dir=$with_oaesis
+      ;;
+    *)
+      oaesis_dir="\$(top_builddir)/$with_oaesis"
+      ;;
+  esac
+
+  OAESIS_CFLAGS="-I$oaesis_dir"
+  OAESIS_LIBS=$oaesis_dir/liboaesis.la
+fi
+
 dnl This is needed for AC_CHECK_HEADERS to find the otosis 
-dnl and the oVDIsis headers
-CPPFLAGS="$CPPFLAGS $OTOSIS_CFLAGS"
+dnl and the oaesis headers
+CPPFLAGS="$CPPFLAGS $OTOSIS_CFLAGS $OAESIS_CFLAGS"
 
 OSISINCLUDE=${includedir}/osis
 
