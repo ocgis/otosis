@@ -16,13 +16,6 @@
  * Copyright 1995, 1996 Bernd Schmidt
  */
 
-#define HAVE_VSPRINTF		1
-#undef X86_ASSEMBLY
-#undef AMIGA
-#undef USE_COMPILER
-#undef M68K_FLAG_OPT
-#undef ACORN_FLAG_OPT
-
 
 #include <stdio.h>
 #include <ctype.h>

@@ -6,6 +6,9 @@
   * Copyright 1996 Bernd Schmidt
   */
 
+#ifndef MACCESS_H
+#define MACCESS_H
+
 static INLINE UInt32 do_get_mem_long(UInt32 *a)
 {
     UInt8 *b = (UInt8 *)a;
@@ -47,3 +50,5 @@ static INLINE void do_put_mem_byte(UInt8 *a, UInt8 v)
 {
     *a = v;
 }
+
+#endif

@@ -7,8 +7,8 @@
   */
 
 #include "misc.h"
+#include "machdep/maccess.h"
 
-#define SPCFLAG_STOP		2
 #define ASM_SYM_FOR_FUNC(X)
 
 extern int areg_byteinc[];

@@ -6,11 +6,9 @@
   * Copyright 1996 Bernd Schmidt
   */
 
-#include "sysconfig.h"
-#include "sysdeps.h"
+#include <string.h>
 
-#include "config.h"
-#include "options.h"
+#include "misc.h"
 #include "machdep/m68k.h"
 
 struct flag_struct regflags;

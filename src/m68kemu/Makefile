@@ -1,11 +1,12 @@
 CC = cc
 CFLAGS = -g -v -I.
 LDFLAGS = $(CFLAGS)
-LIBS =
+LIBS = -lm
 
 PROG = m68k_emu
 
-OBJS = cpuemu.o memory.o
+OBJS = m68k_emu.o cpuemu.o cpustbl.o cpudefs.o fpp.o newcpu.o \
+	memory.o readcpu.o support.o malloc.o
 
 BUILD68K = build68k
 BUILD68K_OBJS = build68k.o
@@ -29,8 +30,11 @@ $(GENCPU):	$(GENCPU_OBJS)
 		$(CC) -o $(GENCPU) $(GENCPU_OBJS)
 
 
-cpuemu.c:	$(GENCPU)
+cpuemu.c cpustbl.c:	$(GENCPU)
 		./$(GENCPU)
+
+support.o:	machdep/support.c
+		$(CC) $(CFLAGS) -c machdep/support.c -o $@
 
 clean:
 		rm -f $(PROG) $(OBJS) $(BUILD68K) $(BUILD68K_OBJS) \
