@@ -142,11 +142,11 @@ my_handle_exception(int     nr,
       switch(CPUget_dreg(0) & 0xffff)
       {
       case 115: /* VDI */
-        vdi_call(CPUget_dreg(1));
+        vdi_call_be32(CPUget_dreg(1));
         break;
 
       case 200: /* AES */
-        aes_call(CPUget_dreg(1));
+        aes_call_be32(CPUget_dreg(1));
         break;
 
       default:
