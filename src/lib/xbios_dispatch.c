@@ -168,9 +168,9 @@ char *xbios_call_retv[] = {
 };
 #endif
 
-unsigned long dispatch_xbios( char *args )
+unsigned long dispatch_xbios(char * _args)
 {
-  int callnum = *(short *)args;
+  TOSARG(short, callnum);
   long rv;
 
   if (callnum < 0 || callnum > arraysize(xbios_syscalls) ||
@@ -179,9 +179,9 @@ unsigned long dispatch_xbios( char *args )
     return TOS_EINVFN;
   }
 
-  STRACE_BEGIN( xbios, args+2 );
-  rv = xbios_syscalls[ callnum ]( args + 2 );
-  STRACE_END( xbios, args+2, rv );
+  STRACE_BEGIN(xbios, _args);
+  rv = xbios_syscalls[callnum](_args);
+  STRACE_END(xbios, _args, rv);
   return rv;
 }
 
