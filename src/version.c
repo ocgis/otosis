@@ -22,8 +22,11 @@
 
 #include <stdio.h>
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "compile.h"
-#include "version.h"
 
 
 void print_version( void )

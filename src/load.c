@@ -28,10 +28,10 @@
 #include <stdlib.h>
 #include <errno.h>
 
-#include "div.h"
-#include "prototypes.h"
-#include "init.h"
+#include <libotosis.h>
+#include <libotosis_option.h>
 
+#include "debug.h"
 
 #ifdef DEBUG_STACK
 unsigned long start_stack;		/* for catching stack overruns */

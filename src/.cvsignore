@@ -1,6 +1,7 @@
-Makefile.in
 *.o
-tos
-Makefile
 .deps
 .libs
+Makefile
+Makefile.in
+compile.h
+tos

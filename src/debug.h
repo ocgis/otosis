@@ -20,12 +20,48 @@
  *
  ************************************************************************/
 
-#ifndef __EMULATE_H__
-#define __EMULATE_H__
+#ifdef DEBUG
 
-#include <libotosis.h>
+extern int mid_of_line;		/* declared in strace.c */
 
-void
-emulate(TosProgram * prog);
+#define CHECK_MID_OF_LINE()			\
+    do {					\
+	if (mid_of_line) {			\
+	    fprintf( stderr, "\n" );		\
+	    mid_of_line = 0;			\
+	}					\
+    } while(0)
 
-#endif /* __EMULATE_H__ */
+#define DDEBUG(fmt,args...)			\
+    do {					\
+	if (Opt_debug) {			\
+	    CHECK_MID_OF_LINE();		\
+	    fprintf( stderr, fmt, ## args);	\
+	}					\
+    } while(0)
+
+#define STRACE_BEGIN(mod,a)				\
+    do {						\
+	if (Opt_debug)					\
+	    strace_begin( mod##_call_names[callnum],	\
+			  mod##_call_args[callnum],	\
+			  a );				\
+	if (prog->trace) {				\
+	    CHECK_MID_OF_LINE();			\
+	    handle_trace( a );				\
+	}						\
+    } while(0)
+
+#define STRACE_END(mod,a,r)				\
+    do {						\
+    	if (Opt_debug)					\
+	    strace_end( mod##_call_names[callnum],	\
+			mod##_call_retv[callnum],	\
+			a, r );				\
+    } while(0)
+
+#else
+#define DDEBUG(fmt,args...)
+#define	STRACE_BEGIN(mod,a)
+#define	STRACE_END(mod,a,r)
+#endif

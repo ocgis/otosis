@@ -1,16 +1,15 @@
-CFLAGS = @CFLAGS@ -Wall
-
-SUBDIRS = lib
-
-INCLUDES = -I../include -Ilib
-
 bin_PROGRAMS = tos
 
 tos_SOURCES = \
-	emulate.c emulate.h tos.c version.c load.c traps.c trace.c strace.c
+	compile.h debug.h emulate.c emulate.h tos.c version.c load.c \
+	traps.c trace.c strace.c
 
-tos_LDADD = lib/libotosis.la
+BUILT_SOURCES = compile.h
 
-# FIXME
-#tos_LDFLAGS = -Wl,-Telf-ldscript.x
+compile.h:
+	@echo "Creating compile.h"
+	@echo \#define OTOSIS_COMPILE_TIME \"`date '+%D %T'`\" > compile.h
+	@echo \#define OTOSIS_COMPILE_BY \"`whoami`\" >> compile.h
+	@echo \#define OTOSIS_COMPILE_HOST \"`hostname`\" >> compile.h
+	@echo \#define OTOSIS_COMPILER \"`$(CC) -v 2>&1 | tail -1`\" >> compile.h
 

@@ -26,7 +26,6 @@ dnl Checks for programs.
 AC_PROG_CC
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
-AC_PROG_AWK
 
 dnl Use this instead of AC_PROG_RANLIB because
 dnl this works with cross-compiling.
@@ -36,8 +35,6 @@ dnl Use libtool to create libotosis
 AM_PROG_LIBTOOL
 
 dnl Checks for libraries.
-AC_CHECK_LIB(m, main)
-AC_CHECK_LIB(ncurses,main)
 AC_CHECK_LIB(ocpuis,main)
 
 dnl Checks for header files.
@@ -69,7 +66,56 @@ dnl AC_FUNC_SETVBUF_REVERSED
 AC_FUNC_VPRINTF
 AC_CHECK_FUNCS(getcwd mkdir rmdir select strerror strspn strtol)
 
+if test x$with_otosis = x ; then 
+  # Look for separately installed otosis
+
+  AM_PATH_OTOSIS(0.31.0,,
+    AC_MSG_ERROR([
+*** otosis 0.31.0 or better is required. The latest version of otosis
+*** is always available from ftp://ftp.nocrew.org.]),
+    libotosis)
+
+  otosis_cflags=$OTOSIS_CFLAGS
+  otosis_libs=$OTOSIS_LIBS
+else
+  # Use uninstalled otosis (assume they got the version right)
+
+  if test -x $with_otosis/otosis-config ; then 
+    :
+  else
+    AC_MSG_ERROR([otosis directory ($with_otosis) not present or not configured])
+  fi
+
+  # For use in oaesis-config
+  otosis_cflags=`$with_otosis/otosis-config --cflags`
+  otosis_libs=`$with_otosis/otosis-config --libs`
+
+  otosis_release=`$with_otosis/otosis-config --version | sed 's%\\.[[0-9]]*$%%'`
+
+  # canonicalize relative paths
+  case $with_otosis in 
+    /*)
+      otosis_dir=$with_otosis
+      ;;
+    *)
+      otosis_dir="\$(top_builddir)/$with_otosis"
+      ;;
+  esac
+
+  OTOSIS_CFLAGS="-I$otosis_dir"
+  OTOSIS_LIBS=$otosis_dir/libotosis.la
+fi
+
+dnl This is needed for AC_CHECK_HEADERS to find the otosis 
+dnl and the oVDIsis headers
+CPPFLAGS="$CPPFLAGS $OTOSIS_CFLAGS"
+
 OSISINCLUDE=${includedir}/osis
+
+dnl Define version in config.h
+AC_DEFINE_UNQUOTED(OTOSIS_VERSION, "$OTOSIS_MAJOR_VERSION.$OTOSIS_MINOR_VERSION")
+AC_DEFINE_UNQUOTED(OTOSIS_VERSION_MAJOR, $OTOSIS_MAJOR_VERSION)
+AC_DEFINE_UNQUOTED(OTOSIS_VERSION_MINOR, $OTOSIS_MINOR_VERSION)
 
 dnl Specify which variables that should be exchanged
 AC_SUBST(PACKAGE)
@@ -78,11 +124,6 @@ AC_SUBST(OSISINCLUDE)
 AC_SUBST(LT_VERSION_INFO)
 
 AC_OUTPUT(Makefile \
-	tools/Makefile \
-	include/Makefile \
 	src/Makefile \
-        src/lib/Makefile \
-	doc/Makefile \
-        otosis-config \
-        otosis.m4
+	doc/Makefile
 )

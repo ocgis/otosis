@@ -37,20 +37,19 @@
 #include <linux/unistd.h>
 #include <termios.h>
 
-#include "div.h"
-#include "init.h"
-#include "version.h"
-#include "prototypes.h"
-#include "sysvars.h"
-#include "traps.h"
-#include "bios.h"
-#include "xbios.h"
-#include "gemdos.h"
+#include <libotosis.h>
+#include <libotosis_option.h>
+#include <libotosis_sysvars.h>
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
+#include "debug.h"
+
 #ifdef USE_XGEMDOS
 #include "xgemdos.h"
 #endif
-#include "option.h"
-#include "vt52.h"
 #include "emulate.h"
 
 /* Global variables */

@@ -24,9 +24,8 @@
 #include <stdlib.h>
 #include <ctype.h>
 
-#include "div.h"
-#include "sysvars.h"
-#include "prototypes.h"
+#include <libotosis.h>
+#include <libotosis_sysvars.h>
 
 extern TosProgram *prog;
 

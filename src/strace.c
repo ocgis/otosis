@@ -25,10 +25,6 @@
 #include <string.h>
 #include <ctype.h>
 
-#include "div.h"
-#include "prototypes.h"
-#include "toserrors.h"
-
 /* all only if DEBUG defined */
 #ifdef DEBUG
 

@@ -31,10 +31,6 @@
 #include <asm/traps.h>
 #endif
 
-#include "traps.h"
-#include "div.h"
-#include "prototypes.h"
-
 
 extern volatile int in_emu;
 
