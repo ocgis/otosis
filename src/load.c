@@ -4,7 +4,7 @@
  *
  *  Copyright 1996 Elias Martenson <elias@omicron.se>
  *  Copyright 1996 Roman Hodek <Roman.Hodek@informatik.uni-erlangen.de>
- *  Copyright 1999 Christer Gustavsson <cg@nocrew.org>
+ *  Copyright 1999 - 2001 Christer Gustavsson <cg@nocrew.org>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -177,7 +177,7 @@ TosProgram *load_tos_program( char *filename )
   prog->size = size;
 
   prog->basepage = bp;
-  prog->basepage->dta = (Dta *)prog->basepage->cmdlin;
+  prog->basepage->dta = (Dta *)ntohl((UInt32)prog->basepage->cmdlin);
   prog->dta = (Dta *)ntohl((UInt32)prog->basepage->dta);
 
   /* The program starts in user mode */
