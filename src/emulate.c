@@ -124,9 +124,6 @@ my_handle_exception(int     nr,
     case 1:      /* Gemdos, trap #1 */
       usp = CPUget_usp();
 
-      fprintf(stderr, "Handling trap #%d: usp = %p, oldpc = %p\n",
-              trap_num, usp, oldpc);
-      
       d0 = dispatch_gemdos(usp);
       
       CPUset_dreg(0, d0);
@@ -135,8 +132,6 @@ my_handle_exception(int     nr,
     case 13:     /* Bios, trap #13 */
       usp = CPUget_usp();
 
-      fprintf(stderr, "Handling trap #13: usp = 0x%x\n", usp);
-      
       d0 = dispatch_bios(usp);
       
       CPUset_dreg(0, d0);
@@ -145,9 +140,6 @@ my_handle_exception(int     nr,
     case 14:     /* Xbios, trap #14 */
       usp = CPUget_usp();
 
-      fprintf(stderr, "Handling trap #%d: usp = %p, oldpc = %p\n",
-              trap_num, usp, oldpc);
-      
       d0 = dispatch_xbios(usp);
       
       CPUset_dreg(0, d0);
@@ -186,8 +178,6 @@ emulate(TosProgram * prog)
 {
   CPU *   cpu;
   CPUaddr sp = (CPUaddr)prog->basepage->hitpa;
-
-  fprintf(stderr, "Emulating m68k program\n");
 
   my_prog = prog;
 
