@@ -4,6 +4,7 @@
  *
  *  Copyright 1996 Elias Martenson <elias@omicron.se>
  *  Copyright 1996 Roman Hodek <Roman.Hodek@informatik.uni-erlangen.de>
+ *  Copyright 1999 Christer Gustavsson <cg@nocrew.org>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,6 +22,7 @@
  *
  ************************************************************************/
 
+#include <netinet/in.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -117,7 +119,7 @@ TosProgram *load_tos_program( char *filename )
   /* read the header */
   hdr = mymalloc( sizeof(TosExecHeader) );
   if (fread( hdr, sizeof(TosExecHeader), 1, fp ) != 1 ||
-	  hdr->magic != TOS_PROGRAM_MAGIC) {
+	  ntohs(hdr->magic) != TOS_PROGRAM_MAGIC) {
 	fprintf( stderr, "%s: no GEMDOS executable\n", filename );
 	free( hdr );
 	fclose( fp );
@@ -125,15 +127,16 @@ TosProgram *load_tos_program( char *filename )
   }
 
   /* calculate size of TPA */
-  size = sizeof(TosBasepage) +
-	     hdr->tsize + hdr->dsize + hdr->bsize + Opt_extra_mem*1024;
+  size = sizeof(TosBasepage) + ntohl(hdr->tsize) + ntohl(hdr->dsize) +
+    ntohl(hdr->bsize) + Opt_extra_mem*1024;
   buf = mymalloc( size );
   bp = (TosBasepage *)buf;
   prg = (void *)(bp + 1);
 
   /* read program text + data */
-  if (fread( prg, sizeof(char), hdr->tsize+hdr->dsize, fp ) !=
-	  hdr->tsize+hdr->dsize) {
+  if(fread(prg, sizeof(char), ntohl(hdr->tsize) + ntohl(hdr->dsize), fp ) !=
+     ntohl(hdr->tsize) + ntohl(hdr->dsize))
+  {
 	  fprintf( stderr, "%s: short executable!\n", filename );
 	err_ret:
 	  free( buf );
@@ -143,19 +146,19 @@ TosProgram *load_tos_program( char *filename )
   }
 
   /* initialize basepage */
-  bp->lowtpa = bp;
-  bp->hitpa = buf + size;
-  bp->tbase = TEXT_SEGMENT(hdr,prg);
+  bp->lowtpa = htonl(bp);
+  bp->hitpa = htonl(buf + size);
+  bp->tbase = htonl(TEXT_SEGMENT(hdr,prg));
   bp->tlen = hdr->tsize;
-  bp->dbase = DATA_SEGMENT(hdr,prg);
+  bp->dbase = htonl(DATA_SEGMENT(hdr,prg));
   bp->dlen = hdr->dsize;
-  bp->bbase = BSS_SEGMENT(hdr,prg);
+  bp->bbase = htonl(BSS_SEGMENT(hdr,prg));
   bp->blen = hdr->bsize;
   bp->parent = NULL;
   bp->env = env;
   bp->cmdlin[ 0 ] = 0;
 
-/*  patch_program( hdr ); */
+  /*  patch_program( hdr ); */
   if (relocate_program( bp, hdr, fp ) < 0) {
 	  fprintf( stderr, "%s: relocation failed\n", filename );
 	  goto err_ret;
@@ -163,9 +166,9 @@ TosProgram *load_tos_program( char *filename )
   fclose( fp );
   
   /* clear BSS and maybe rest of TPA */
-  memset( BSS_SEGMENT(hdr,prg), 0,
-		  hdr->bsize +
-		    ((hdr->prgflags & TOS_PRGFLAG_FASTLOAD) ? 0 : Opt_extra_mem*1024) );
+  memset(BSS_SEGMENT(hdr,prg), 0,
+         ntohl(hdr->bsize) +
+         ((ntohl(hdr->prgflags) & TOS_PRGFLAG_FASTLOAD) ? 0 : Opt_extra_mem*1024) );
 
   prog->text = TEXT_SEGMENT(hdr,prg);
   prog->data = DATA_SEGMENT(hdr,prg);
@@ -176,17 +179,17 @@ TosProgram *load_tos_program( char *filename )
   prog->basepage->dta = (Dta *)&(prog->basepage->cmdlin[ 0 ]);
   prog->dta = prog->basepage->dta;
 
-/* The program starts in user mode */
+  /* The program starts in user mode */
   prog->super = 0;
-
-/* The program starts in the TOS domain */
+  
+  /* The program starts in the TOS domain */
   prog->domain = 0;
 
 #ifdef DEBUG_STACK
-  start_stack = BSS_SEGMENT(hdr,prg) + hdr->bsize;
+  start_stack = BSS_SEGMENT(hdr,prg) + ntohl(hdr->bsize);
 #endif
 
-  free( hdr );
+  free(hdr);
   
   return prog;
 }
@@ -197,7 +200,7 @@ static int relocate_program( TosBasepage *bp, TosExecHeader *hdr, FILE *fp )
   unsigned long offset, reloc, space, n;
 
   if( hdr->absflag )  return 0;
-  reloc = (ulong)bp->tbase;
+  reloc = ntohl((ulong)bp->tbase);
   
   /* seek to reloc table and read first offset */
   fseek( fp, (ulong)FIXUP_OFFSET(hdr), SEEK_SET );
@@ -206,11 +209,11 @@ static int relocate_program( TosBasepage *bp, TosExecHeader *hdr, FILE *fp )
   if (!offset) return 0;
 
   /* fix first offset */
-  fixaddr = (unsigned char *)(reloc + offset);
-  *(ulong *)fixaddr += reloc;
+  fixaddr = (unsigned char *)(reloc + ntohl(offset));
+  *(ulong *)fixaddr = htonl(ntohl(*(ulong *)fixaddr) + reloc);
 
   /* available space for reloc buffer */
-  space = bp->hitpa - BSS_SEGMENT(hdr,reloc);
+  space = ntohl(bp->hitpa) - BSS_SEGMENT(hdr,reloc);
   
   for(;;) {
     /* read as much of reloc table as possible into BSS */
@@ -224,9 +227,14 @@ static int relocate_program( TosBasepage *bp, TosExecHeader *hdr, FILE *fp )
 
 	for( ; *fix && n > 0; ++fix, --n ) {
 	  if (*fix == 1)
-		  fixaddr += 254;
+      {
+        fixaddr += 254;
+      }
 	  else
-		  *(ulong *)(fixaddr += *fix) += reloc;
+      {
+        *(ulong *)fixaddr = htonl(ntohl(*(ulong *)fixaddr) + reloc);
+        fixaddr += *fix;
+      }
     }
   }
   return 0;

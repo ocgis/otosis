@@ -57,9 +57,9 @@ typedef struct {
 
 #define TOS_PROGRAM_MAGIC	0x601A
 #define TEXT_SEGMENT(H,X)	((Ptr32 )((UInt32)(X)))
-#define DATA_SEGMENT(H,X)	((Ptr32 )((UInt32)TEXT_SEGMENT(H,X) + (H)->tsize))
-#define BSS_SEGMENT(H,X)	((Ptr32 )((UInt32)DATA_SEGMENT(H,X) + (H)->dsize))
-#define FIXUP_OFFSET(H)		((Ptr32 )((UInt32)BSS_SEGMENT(H,sizeof(TosExecHeader)) + (H)->ssize))
+#define DATA_SEGMENT(H,X)	((Ptr32 )((UInt32)TEXT_SEGMENT(H,X) + ntohl((H)->tsize)))
+#define BSS_SEGMENT(H,X)	((Ptr32 )((UInt32)DATA_SEGMENT(H,X) + ntohl((H)->dsize)))
+#define FIXUP_OFFSET(H)		((Ptr32 )((UInt32)BSS_SEGMENT(H,sizeof(TosExecHeader)) + ntohl((H)->ssize)))
 
 typedef struct {
   char d_reserved[ 21 ];	/* Reserved */
