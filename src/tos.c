@@ -33,7 +33,7 @@
 #include <sys/mman.h>
 #include <signal.h>
 /* sys/user.h needed for PAGE_SIZE */
-#include <sys/user.h>
+#include <linux/user.h>
 #include <linux/unistd.h>
 #include <termios.h>
 

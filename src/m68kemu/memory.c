@@ -21,6 +21,8 @@ void init_memory( void )
   {
     UInt16 *p = m68k_memory_ptr;
 
+    /* FIXME */
+#if 0
     *p++ = 0x303c; /* move.w #$abcd,d0 */
     *p++ = 0xabcd;
     *p++ = 0x0640; /* add.w #$10,d0 */
@@ -32,6 +34,7 @@ void init_memory( void )
     *p++ = 0x0010;
     *p++ = 0x0ffe;
     *p++ = 0x4e41; /* trap #1 */
+#endif
   }
 }
 
