@@ -103,9 +103,9 @@ fi
 if test x$with_oaesis = x ; then
   # Look for separately installed oaesis
 
-  AM_PATH_OAESIS(0.90.0,,
+  AM_PATH_OAESIS(0.91.0,,
     AC_MSG_ERROR([
-*** oaesis 0.90.0 or better is required. The latest version of oaesis
+*** oaesis 0.91.0 or better is required. The latest version of oaesis
 *** is always available from ftp://ftp.nocrew.org.]),
     liboaesis)
 
